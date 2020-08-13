@@ -18,4 +18,6 @@ public class OnlineJudgeClientController {
     public ResponseEntity<String> handleClientRequest(){
         return new ResponseEntity("hello", HttpStatus.ACCEPTED);
     }
+
+
 }
