@@ -1,13 +1,6 @@
-debug: true
+server:
+  port: 8080
 
 spring:
-  thymeleaf:
-    encoding: UTF-8
-    cache: false
-    mode: HTML
-  jackson:
-    default-property-inclusion: non_empty
-
-logging:
-  level:
-    root: info
+  profiles:
+    active: dev
