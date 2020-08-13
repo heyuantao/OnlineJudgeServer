@@ -55,7 +55,7 @@ public class TokenAuthFilter extends OncePerRequestFilter {
                 SysUser sysUser = authService.loadSysUserByToken(userToken);
 
                 if(sysUser==null){
-                    throw new AuthException();
+                    throw new AuthException("未找到对应的用户,Token错误！");
                 }else if(userToken!=null){
                     SysUserDetails sysUserDetails = new SysUserDetails(sysUser);
 
@@ -65,9 +65,13 @@ public class TokenAuthFilter extends OncePerRequestFilter {
                     usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                 }else{
-                    throw new AuthException();
+                    throw new AuthException("异常的认证错误！");
                 }
             }
+        }catch (AuthException ex){
+            errorDetails = new ErrorDetails("认证错误",ex.getMessage());
+            responseWithErrorDetails(httpServletResponse,errorDetails,HttpStatus.UNAUTHORIZED);
+            return;
         }catch (Exception ex){
             errorDetails = new ErrorDetails("未知错误","登录出现未知错误");
             responseWithErrorDetails(httpServletResponse,errorDetails,HttpStatus.UNAUTHORIZED);
