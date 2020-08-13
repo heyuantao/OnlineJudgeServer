@@ -36,48 +36,42 @@ public class TokenAuthFilter extends OncePerRequestFilter {
     private ObjectMapper objectMapper;
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest httpServletRequest,
-            HttpServletResponse httpServletResponse,
-            FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
 
         final String authorizationHeader = httpServletRequest.getHeader("Authorization");
-
         String userToken = null;
-        ErrorDetails errorDetails = null;
 
         try{
             if( authorizationHeader !=null ){
                 userToken = authorizationHeader;
             }
 
+            //如果HTTP header中没有Token信息，同时SecurityContextHolder也没有用户的信息，则准备进行认证
             if( userToken!=null && SecurityContextHolder.getContext().getAuthentication() == null ){
+                //根据Token来获得用户，如果Token不对，则返回值为空
                 SysUser sysUser = authService.loadSysUserByToken(userToken);
 
-                if(sysUser==null){
-                    throw new AuthException("未找到对应的用户,Token错误！");
-                }else if(userToken!=null){
+                if(sysUser!=null){
                     SysUserDetails sysUserDetails = new SysUserDetails(sysUser);
-
-                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                            sysUserDetails, null, sysUserDetails.getAuthorities());
-
+                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(sysUserDetails, null, sysUserDetails.getAuthorities());
+                    //将登录的用户信息与Request进行绑定,后续可以直接通过SecurityContextHolder来获取用户身份
                     usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                 }else{
-                    throw new AuthException("异常的认证错误！");
+                    throw new AuthException("未找到对应的用户,Token错误！");
                 }
             }
         }catch (AuthException ex){
-            errorDetails = new ErrorDetails("认证错误",ex.getMessage());
+            ErrorDetails errorDetails = new ErrorDetails("认证错误",ex.getMessage());
             responseWithErrorDetails(httpServletResponse,errorDetails,HttpStatus.UNAUTHORIZED);
             return;
         }catch (Exception ex){
-            errorDetails = new ErrorDetails("未知错误","登录出现未知错误");
+            ErrorDetails errorDetails = new ErrorDetails("未知错误","登录出现未知错误");
             responseWithErrorDetails(httpServletResponse,errorDetails,HttpStatus.UNAUTHORIZED);
             return;
         }
 
+        //进行后续的过滤
         filterChain.doFilter(httpServletRequest,httpServletResponse);
     }
 

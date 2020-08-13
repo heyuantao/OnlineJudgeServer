@@ -23,10 +23,9 @@ public class IndexPageController {
     @Resource
     SoftwareInformation softwareInformation;
 
-
-    @GetMapping("/test")
+    @GetMapping("/permissiontest")
     public ResponseEntity<String> test(){
-        return new ResponseEntity("test", HttpStatus.ACCEPTED);
+        return new ResponseEntity("accept", HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/version")

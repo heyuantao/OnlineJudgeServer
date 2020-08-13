@@ -20,7 +20,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
-
     @Autowired
     private TokenAuthFilter tokenAuthFilter;
 
@@ -29,7 +28,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/swagger-ui.html","/swagger-resources","/swagger-resources/**","/v2/api-docs","/webjars/**").permitAll()
-                .antMatchers("/api/v1/login").permitAll()
+                //.antMatchers("/api/v1/login").permitAll()
                 .antMatchers("/","/version").permitAll()
                 //.antMatchers("/","/index","/css/*","/js/*","/webjars/**").permitAll()
                 .anyRequest().authenticated()
@@ -38,11 +37,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
-/*    @Override
+    /*
+    @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception{
         auth.userDetailsService(userDetailsService);
-    }*/
-
+    }
+    */
 
 
     @Bean
