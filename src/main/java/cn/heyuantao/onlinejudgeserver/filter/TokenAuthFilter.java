@@ -1,5 +1,6 @@
 package cn.heyuantao.onlinejudgeserver.filter;
 
+import cn.heyuantao.onlinejudgeserver.auth.AuthService;
 import cn.heyuantao.onlinejudgeserver.auth.SysUser;
 import cn.heyuantao.onlinejudgeserver.auth.SysUserDetails;
 import cn.heyuantao.onlinejudgeserver.exception.ErrorDetails;
@@ -13,6 +14,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import javax.security.auth.message.AuthException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +28,9 @@ import java.util.HashMap;
  */
 @Component
 public class TokenAuthFilter extends OncePerRequestFilter {
+
+    @Autowired
+    AuthService authService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -44,12 +49,14 @@ public class TokenAuthFilter extends OncePerRequestFilter {
         try{
             if( authorizationHeader !=null ){
                 userToken = authorizationHeader;
-
             }
 
             if( userToken!=null && SecurityContextHolder.getContext().getAuthentication() == null ){
-                if(userToken.equals("abc123")){
-                    SysUser sysUser = new SysUser("abc123","abc123");
+                SysUser sysUser = authService.loadSysUserByToken(userToken);
+
+                if(sysUser==null){
+                    throw new AuthException();
+                }else if(userToken!=null){
                     SysUserDetails sysUserDetails = new SysUserDetails(sysUser);
 
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
@@ -57,6 +64,8 @@ public class TokenAuthFilter extends OncePerRequestFilter {
 
                     usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                }else{
+                    throw new AuthException();
                 }
             }
         }catch (Exception ex){

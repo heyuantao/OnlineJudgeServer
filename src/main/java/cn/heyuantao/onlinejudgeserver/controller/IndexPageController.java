@@ -23,6 +23,12 @@ public class IndexPageController {
     @Resource
     SoftwareInformation softwareInformation;
 
+
+    @GetMapping("/test")
+    public ResponseEntity<String> test(){
+        return new ResponseEntity("test", HttpStatus.ACCEPTED);
+    }
+
     @GetMapping("/version")
     public ResponseEntity<SoftwareInformation> version(){
         return new ResponseEntity(softwareInformation, HttpStatus.ACCEPTED);
