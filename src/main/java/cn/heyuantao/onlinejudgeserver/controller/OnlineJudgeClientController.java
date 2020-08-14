@@ -18,6 +18,7 @@ import java.util.List;
 @Api(tags={"判题机接口"})
 @Controller
 @RequestMapping("/api/v1/onlinejudgeclient/")
+//@RequestMapping(path = {"abc","efg"})
 public class OnlineJudgeClientController {
 
     @Autowired
