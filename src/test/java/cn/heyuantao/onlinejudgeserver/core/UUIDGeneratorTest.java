@@ -13,7 +13,7 @@ class UUIDGeneratorTest {
 
     @Test
     void getUIID() {
-        String id = UUIDGenerator.getSolutionKey();
+        String id = UUIDGenerator.generateSolutionKey();
         System.out.println(id);
     }
 }

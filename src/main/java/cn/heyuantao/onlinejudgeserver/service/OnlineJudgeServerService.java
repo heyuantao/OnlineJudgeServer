@@ -1,10 +1,9 @@
 package cn.heyuantao.onlinejudgeserver.service;
 
 import cn.heyuantao.onlinejudgeserver.core.UUIDGenerator;
-import cn.heyuantao.onlinejudgeserver.domain.Problem;
-import cn.heyuantao.onlinejudgeserver.domain.Result;
-import cn.heyuantao.onlinejudgeserver.domain.Solution;
-import io.swagger.models.auth.In;
+import cn.heyuantao.onlinejudgeserver.core.Problem;
+import cn.heyuantao.onlinejudgeserver.core.Result;
+import cn.heyuantao.onlinejudgeserver.core.Solution;
 import org.springframework.stereotype.Service;
 
 /**

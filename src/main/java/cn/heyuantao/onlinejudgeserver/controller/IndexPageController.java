@@ -1,7 +1,7 @@
 package cn.heyuantao.onlinejudgeserver.controller;
 
 
-import cn.heyuantao.onlinejudgeserver.domain.SoftwareInformation;
+import cn.heyuantao.onlinejudgeserver.core.SoftwareInformation;
 import io.swagger.annotations.Api;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

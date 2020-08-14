@@ -1,4 +1,4 @@
-package cn.heyuantao.onlinejudgeserver.domain;
+package cn.heyuantao.onlinejudgeserver.core;
 
 
 import java.io.Serializable;

@@ -1,4 +1,4 @@
-package cn.heyuantao.onlinejudgeserver.domain;
+package cn.heyuantao.onlinejudgeserver.core;
 
 import io.swagger.models.auth.In;
 
