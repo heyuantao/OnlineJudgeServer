@@ -40,10 +40,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 全局异常处理，处理接口层面的数据异常的错误
-     * @param exception
-     * @param request
-     * @return
+     * 全局异常处理，处理接口层面的数据异常的错误,BindResultException是封装了BindResult的一个异常类
      */
     @ExceptionHandler(BindingResultException.class)
     public ResponseEntity<?> handleBindingResultException(BindingResultException exception, WebRequest request){
@@ -53,9 +50,6 @@ public class GlobalExceptionHandler {
 
     /**
      * 方法不支持的异常，当对模型接口发送了不被支持的方法时候会触发该异常
-     * @param exception
-     * @param request
-     * @return
      */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<?> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException exception, WebRequest request){
