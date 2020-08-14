@@ -68,4 +68,26 @@ public class OnlineJudgeClientController {
         return new ResponseEntity(solution_content,HttpStatus.ACCEPTED);
     }
 
+
+    /**
+     * 该方法用于测试盘端的连通性,该部分的代码为其他部分的编写提供了样例
+     * @param sid
+     * @param max_running
+     * @return 确保返回值一定是 HttpStatus.OK
+     */
+    @PostMapping("/test/")
+    public ResponseEntity<String> test(
+            @RequestParam(value="oj_lang_set") String sid,
+            @RequestParam(value="max_running") String max_running
+    ){
+        System.out.println("---------This is the content---------------");
+        System.out.println(sid);
+        System.out.println(max_running);
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("hello");
+        stringBuilder.append("\n");
+        stringBuilder.append("world");
+        stringBuilder.append("\n");
+        return new ResponseEntity(stringBuilder.toString(),HttpStatus.OK);
+    }
 }
