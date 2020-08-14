@@ -1,10 +1,12 @@
 package cn.heyuantao.onlinejudgeserver.domain;
 
+import java.io.Serializable;
+
 /**
  * @author he_yu
  * 每个题目的测试用例，包含了输入的内容和输出的内容
  */
-public class ProblemTestCase {
+public class ProblemTestCase implements Serializable {
     /**
      * 输入的内容
      */
@@ -38,5 +40,13 @@ public class ProblemTestCase {
 
     public void setTarget(String target) {
         this.target = target;
+    }
+
+    @Override
+    public String toString() {
+        return "ProblemTestCase{" +
+                "input='" + input + '\'' +
+                ", target='" + target + '\'' +
+                '}';
     }
 }
