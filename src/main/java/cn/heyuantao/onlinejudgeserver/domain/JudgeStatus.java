@@ -48,8 +48,24 @@ public enum JudgeStatus {
         this.value = value;
     }
 
+    /**
+     * 题目是否下发给了判题机，如果下发则返回False
+     * @return
+     */
     public Boolean isInPendingStatus(){
         if(this==JudgeStatus.PD){
+            return Boolean.TRUE;
+        }else{
+            return Boolean.FALSE;
+        }
+    }
+
+    /**
+     * 最后结果是否正确
+     * @return
+     */
+    public Boolean isSuccessStatus(){
+        if(this==JudgeStatus.AC){
             return Boolean.TRUE;
         }else{
             return Boolean.FALSE;

@@ -6,6 +6,9 @@ package cn.heyuantao.onlinejudgeserver.domain;
  */
 public class Solution {
 
+    /**
+     * 题目的编号
+     */
     private String uuid;
 
     /**
