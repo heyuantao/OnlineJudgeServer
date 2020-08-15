@@ -47,11 +47,15 @@ public class RedisService {
 
             @Override
             public Object execute(RedisOperations operations) throws DataAccessException {
+                /**
+                 * 将问题保存到Redis中，同时将题目编号保存到等待队列中
+                 */
                 operations.multi();
-                operations.opsForValue().set(solutionPrefix+solution.getId(),solution);
+                String key = solutionPrefix+solution.getId();
+                System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@");
+                System.out.println(key);
+                operations.opsForValue().set(key,solution);
                 operations.opsForList().rightPush(pendingQueueName,solution.getId());
-                //operations.opsForValue().set("ok","good");
-                //operations.opsForValue().increment("ok");
                 return operations.exec();
             }
         };
@@ -78,4 +82,8 @@ public class RedisService {
             return Boolean.TRUE;
         }*/
     }
+
+    /**
+     *
+     */
 }

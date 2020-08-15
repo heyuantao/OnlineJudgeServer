@@ -21,7 +21,6 @@ public class UUIDGenerator {
      * @return
      */
     public static String generateSolutionKey(){
-        String prefix = "solution::";
-        return prefix+getUIID();
+        return getUIID();
     }
 }
