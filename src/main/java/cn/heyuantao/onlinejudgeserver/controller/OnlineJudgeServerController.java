@@ -28,8 +28,8 @@ public class OnlineJudgeServerController {
             throw new BindingResultException(bindingResult);
         }
 
-        //System.out.println(problemRequestDTO);
-        log.debug(problemRequestDTO.toString());
+        System.out.println(problemRequestDTO);
+        //log.debug(problemRequestDTO.toString());
 
         return new ResponseEntity("work", HttpStatus.ACCEPTED);
     }

@@ -25,7 +25,7 @@ public class AllowStringValidator implements ConstraintValidator<AllowString,Str
     @Override
     public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
         for(String str:stringList){
-            if(StringUtils.equalsIgnoreCase(str,s)){
+            if(StringUtils.equals(str,s)){
                 return true;
             }
         }
