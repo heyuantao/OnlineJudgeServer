@@ -22,6 +22,7 @@ public class OnlineJudgeServerService {
         Solution solution = new Solution();
         String idStr = UUIDGenerator.generateSolutionKey();
         solution.setId(idStr);
+
         solution.setProblem(problem);
 
         Result result = new Result();

@@ -1,11 +1,21 @@
 package cn.heyuantao.onlinejudgeserver.core;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.io.Serializable;
 
 /**
  * @author he_yu
  * 表示题目的信息
  */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
 public class Solution implements Serializable {
 
     /**
@@ -23,48 +33,4 @@ public class Solution implements Serializable {
      */
     private Result result;
 
-
-    public Solution(String id, Problem problem, Result result) {
-        this.id = id;
-        this.problem = problem;
-        this.result = result;
-    }
-
-    public Solution() {
-    }
-
-
-    public Problem getProblem() {
-        return problem;
-    }
-
-    public void setProblem(Problem problem) {
-        this.problem = problem;
-    }
-
-    public Result getResult() {
-        return result;
-    }
-
-    public void setResult(Result result) {
-        this.result = result;
-    }
-
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String toString() {
-        return "Solution{" +
-                "id='" + id + '\'' +
-                ", problem=" + problem +
-                ", result=" + result +
-                '}';
-    }
 }

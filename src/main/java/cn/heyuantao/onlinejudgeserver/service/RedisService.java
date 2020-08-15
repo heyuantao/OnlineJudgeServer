@@ -1,0 +1,58 @@
+package cn.heyuantao.onlinejudgeserver.service;
+
+import cn.heyuantao.onlinejudgeserver.core.Solution;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SessionCallback;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+ * @author he_yu
+ * 负责将相应的数据保存在Redis中
+ */
+@Service
+public class RedisService {
+
+    @Autowired
+    RedisTemplate redisTemplate;
+
+    /**
+     * 在Redis要存储三种类型的信息
+     * 1、Solution本身，用SOLUTION作为前缀
+     * 2、PENDING队列，存储待待处理的SOLUTION
+     * 3、PROCESSING队列，存储正在处理的SOLUTION
+     */
+    private String pendingQueueName       = "PENDING";
+    private String processingQueueName    = "PROCESSING";
+    private String solutionPrefix           = "SOLUTION::";
+
+    /**
+     * 将Solution保存在Redis中，同时将其加入等待队列,
+     * @param solution
+     * @return 如果保存成功，则返回True，负责返回False
+     */
+    public Boolean insertSolutionIntoRedis(Solution solution){
+        /**
+         * 创建一个事务，保存所有命令一次执行完成
+         */
+        SessionCallback<Solution> callback = new SessionCallback() {
+            @Override
+            public Object execute(RedisOperations operations) throws DataAccessException {
+                operations.multi();
+                operations.opsForValue().set(solutionPrefix+solution.getId(),solution);
+                operations.opsForList().rightPush(pendingQueueName,solution.getId());
+                return operations.exec();
+            }
+        };
+        
+        if(redisTemplate.execute(callback)==null){
+            return Boolean.TRUE;
+        }else{
+            return Boolean.TRUE;
+        }
+    }
+}

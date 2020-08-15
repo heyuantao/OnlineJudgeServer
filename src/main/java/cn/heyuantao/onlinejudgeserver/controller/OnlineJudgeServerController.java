@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author he_yu
  * 客户端接口，为
@@ -33,7 +36,7 @@ public class OnlineJudgeServerController {
     OnlineJudgeServerService onlineJudgeServerService;
 
     @PostMapping("/problem/")
-    public ResponseEntity<Solution> createProblem(
+    public ResponseEntity<Map<String,Object>> createProblem(
             @Validated @RequestBody ProblemRequestDTO problemRequestDTO,
             BindingResult bindingResult
     ) throws Exception {
@@ -42,9 +45,14 @@ public class OnlineJudgeServerController {
         }
 
         Problem problem = convertToProblem(problemRequestDTO);
+
         Solution solution = onlineJudgeServerService.createSolutionByProblem(problem);
 
-        return new ResponseEntity(solution, HttpStatus.ACCEPTED);
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put("id",solution.getId());
+        map.put("notifyUrl",solution.getProblem().getNotifyAddress());
+
+        return new ResponseEntity(map, HttpStatus.ACCEPTED);
     }
 
 
