@@ -3,6 +3,7 @@ package cn.heyuantao.onlinejudgeserver.service;
 import cn.heyuantao.onlinejudgeserver.core.Solution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
@@ -48,8 +49,16 @@ public class RedisService {
                 return operations.exec();
             }
         };
-        
-        if(redisTemplate.execute(callback)==null){
+
+        /**
+         * 返回值为ArrayList<Object>,其中每个Object代表了命令的执行情况
+         */
+        List<Object> objectList = (List<Object>) redisTemplate.execute(callback);
+
+        /**
+         * 根据返回值判断命令的执行情况
+         */
+        if(objectList==null){
             return Boolean.TRUE;
         }else{
             return Boolean.TRUE;
