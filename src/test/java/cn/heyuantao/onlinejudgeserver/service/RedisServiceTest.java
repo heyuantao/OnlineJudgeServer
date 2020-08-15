@@ -27,6 +27,7 @@ class RedisServiceTest {
         solution.setResult(new Result());
         System.out.println(solution);
 
-        redisService.insertSolutionIntoRedis(solution);
+        Boolean status = redisService.insertSolutionIntoRedis(solution);
+        System.out.println(status);
     }
 }
