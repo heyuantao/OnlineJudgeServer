@@ -1,5 +1,6 @@
 package cn.heyuantao.onlinejudgeserver.core;
 
+import cn.heyuantao.onlinejudgeserver.exception.MessageException;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -37,7 +38,7 @@ public enum LanguageType {
         this.value = value;
     }
 
-    public static LanguageType getLanguageTypeByExtension(String extension) throws Exception {
+    public static LanguageType getLanguageTypeByExtension(String extension)  {
         if(StringUtils.equalsIgnoreCase(extension,"c")){
             return LanguageType.C;
         }else if(StringUtils.equalsIgnoreCase(extension,"cpp")){
@@ -45,7 +46,7 @@ public enum LanguageType {
         }else if(StringUtils.equalsIgnoreCase(extension,"java")){
             return LanguageType.JAVA;
         }else{
-            throw new Exception("扩展名:"+extension+"不被支持");
+            throw new MessageException("扩展名:"+extension+"不被支持");
         }
 
     }

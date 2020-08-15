@@ -2,6 +2,8 @@ package cn.heyuantao.onlinejudgeserver.controller;
 
 import cn.heyuantao.onlinejudgeserver.core.LanguageType;
 import cn.heyuantao.onlinejudgeserver.core.Problem;
+import cn.heyuantao.onlinejudgeserver.core.ProblemResourceLimit;
+import cn.heyuantao.onlinejudgeserver.core.Solution;
 import cn.heyuantao.onlinejudgeserver.domain.ProblemRequestDTO;
 import cn.heyuantao.onlinejudgeserver.exception.BindingResultException;
 import cn.heyuantao.onlinejudgeserver.service.OnlineJudgeServerService;
@@ -31,7 +33,7 @@ public class OnlineJudgeServerController {
     OnlineJudgeServerService onlineJudgeServerService;
 
     @PostMapping("/problem/")
-    public ResponseEntity<String> createProblem(
+    public ResponseEntity<Solution> createProblem(
             @Validated @RequestBody ProblemRequestDTO problemRequestDTO,
             BindingResult bindingResult
     ) throws Exception {
@@ -40,18 +42,28 @@ public class OnlineJudgeServerController {
         }
 
         Problem problem = convertToProblem(problemRequestDTO);
-        onlineJudgeServerService.createSolutionByProblem(problem);
+        Solution solution = onlineJudgeServerService.createSolutionByProblem(problem);
 
-
-        return new ResponseEntity("work", HttpStatus.ACCEPTED);
+        return new ResponseEntity(solution, HttpStatus.ACCEPTED);
     }
 
-    public Problem convertToProblem(ProblemRequestDTO problemRequestDTO) throws Exception {
+
+    public Problem convertToProblem(ProblemRequestDTO problemRequestDTO)  {
         Problem problem = new Problem();
+
         problem.setSourceCode(problemRequestDTO.getSourceCode());
         problem.setNotifyAddress(problemRequestDTO.getNotifyAddress());
+
         LanguageType languageType = LanguageType.getLanguageTypeByExtension(problemRequestDTO.getLangExtension());
         problem.setLanguageType(languageType);
+
+        ProblemResourceLimit problemResourceLimit = new ProblemResourceLimit();
+        problemResourceLimit.setMemoryLimit(problemRequestDTO.getMemoryLimit());
+        problemResourceLimit.setTimeLimit(problemRequestDTO.getTimeLimit());
+        problemResourceLimit.setSpecialJudge(problemRequestDTO.getIsSpecialJudge());
+        problem.setProblemResourceLimit(problemResourceLimit);
+
+        problem.setTestCaseList(problemRequestDTO.getTestCaseList());
 
         return problem;
     }
