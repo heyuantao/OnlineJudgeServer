@@ -5,6 +5,7 @@ import cn.heyuantao.onlinejudgeserver.core.Problem;
 import cn.heyuantao.onlinejudgeserver.core.ProblemTestCase;
 import cn.heyuantao.onlinejudgeserver.validator.AllowString;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -33,22 +34,24 @@ public class ProblemRequestDTO implements Serializable {
     /**
      * 默认时间限制默认为1秒
      */
+    @Range(min=1,max=10,message = "时间限制在1到100秒之间")
     @NotNull(message = "时间限制不能为空")
-    private Integer timeLimit=1;
+    private Integer timeLimit;
 
     /**
      * 默认内存限制为128M
      */
+    @Range(min=8,max=512,message = "内存限制在8-512兆之间")
     @NotNull(message = "内存限制不能为空")
-    private Integer memoryLimit=128;
+    private Integer memoryLimit;
 
     /**
      * 是否需要特殊判定,默认为False
      */
-    private Boolean isSpecialJudge=Boolean.FALSE;
+    //private Boolean isSpecialJudge=Boolean.FALSE;
 
     /**
-     * 针对代码的测试用例，至少有一个测试用例
+     * 针对代码的测试用例，测试用例可以为空
      */
     @NotNull(message = "测试用例不能为空")
     private List<ProblemTestCase> testCaseList;
@@ -57,12 +60,12 @@ public class ProblemRequestDTO implements Serializable {
     private String notifyAddress;
 
 
-    public ProblemRequestDTO(String sourceCode, String langExtension, Integer timeLimit, Integer memoryLimit, Boolean isSpecialJudge, List<ProblemTestCase> testCaseList, String notifyAddress) {
+    public ProblemRequestDTO(String sourceCode, String langExtension, Integer timeLimit, Integer memoryLimit, List<ProblemTestCase> testCaseList, String notifyAddress) {
         this.sourceCode = sourceCode;
         this.langExtension = langExtension;
         this.timeLimit = timeLimit;
         this.memoryLimit = memoryLimit;
-        this.isSpecialJudge = isSpecialJudge;
+        //this.isSpecialJudge = isSpecialJudge;
         this.testCaseList = testCaseList;
         this.notifyAddress = notifyAddress;
     }
@@ -102,13 +105,13 @@ public class ProblemRequestDTO implements Serializable {
         this.memoryLimit = memoryLimit;
     }
 
-    public Boolean getSpecialJudge() {
+/*    public Boolean getSpecialJudge() {
         return isSpecialJudge;
     }
 
     public void setSpecialJudge(Boolean specialJudge) {
         isSpecialJudge = specialJudge;
-    }
+    }*/
 
     public List<ProblemTestCase> getTestCaseList() {
         return testCaseList;
@@ -133,7 +136,7 @@ public class ProblemRequestDTO implements Serializable {
                 ", langExtension='" + langExtension + '\'' +
                 ", timeLimit=" + timeLimit +
                 ", memoryLimit=" + memoryLimit +
-                ", isSpecialJudge=" + isSpecialJudge +
+                //", isSpecialJudge=" + isSpecialJudge +
                 ", testCaseList=" + testCaseList +
                 ", notifyAddress='" + notifyAddress + '\'' +
                 '}';
