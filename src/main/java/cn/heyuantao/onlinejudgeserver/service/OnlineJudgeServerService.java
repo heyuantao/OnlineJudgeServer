@@ -18,7 +18,7 @@ public class OnlineJudgeServerService {
      * @param problem
      * @return
      */
-    public String createSolution(Problem problem){
+    public String createSolutionByProblem(Problem problem){
         Solution solution = new Solution();
         String idStr = UUIDGenerator.generateSolutionKey();
         solution.setId(idStr);

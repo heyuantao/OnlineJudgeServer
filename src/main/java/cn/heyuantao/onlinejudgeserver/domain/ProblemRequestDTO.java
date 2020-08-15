@@ -62,6 +62,9 @@ public class ProblemRequestDTO implements Serializable {
     @NotNull(message = "测试用例不能为空")
     private List<ProblemTestCase> testCaseList;
 
+    /**
+     * 系统的回调地址，用该地址提供通知
+     */
     @NotEmpty(message = "回调地址不能为空")
     @NotNull(message = "回调地址必须提供")
     private String notifyAddress;

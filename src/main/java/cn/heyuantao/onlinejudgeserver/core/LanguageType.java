@@ -1,5 +1,7 @@
 package cn.heyuantao.onlinejudgeserver.core;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * @author he_yu
  * 不同的语言类型
@@ -34,4 +36,18 @@ public enum LanguageType {
     public void setValue(Integer value) {
         this.value = value;
     }
+
+    public static LanguageType getLanguageTypeByExtension(String extension) throws Exception {
+        if(StringUtils.equalsIgnoreCase(extension,"c")){
+            return LanguageType.C;
+        }else if(StringUtils.equalsIgnoreCase(extension,"cpp")){
+            return LanguageType.CPP;
+        }else if(StringUtils.equalsIgnoreCase(extension,"java")){
+            return LanguageType.JAVA;
+        }else{
+            throw new Exception("扩展名:"+extension+"不被支持");
+        }
+
+    }
+
 }
