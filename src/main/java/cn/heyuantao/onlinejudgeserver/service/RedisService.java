@@ -52,8 +52,6 @@ public class RedisService {
                  */
                 operations.multi();
                 String key = solutionPrefix+solution.getId();
-                System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@");
-                System.out.println(key);
                 operations.opsForValue().set(key,solution);
                 operations.opsForList().rightPush(pendingQueueName,solution.getId());
                 return operations.exec();
@@ -66,24 +64,41 @@ public class RedisService {
              * 返回值为ArrayList<Object>,其中每个Object代表了命令的执行情况
              */
             List<Object> objectList = (List<Object>) redisTemplate.execute(callback);
+            return Boolean.TRUE;
         }catch (Exception ex){
             log.error("Error in insertSolutionIntoRedis !");
             return Boolean.FALSE;
         }
-
-        return Boolean.TRUE;
-
-        /**
-         * 根据返回值判断命令的执行情况，可能不需要这个操作，即如果出现错误，可能之间就抛出异常
-         */
-/*        if(objectList==null){
-            return Boolean.TRUE;
-        }else{
-            return Boolean.TRUE;
-        }*/
     }
 
+
     /**
-     *
+     * 从等待队列中移除一个任务，并将其加入待处理队列
+     * @return 如果正常返回一个编号，否则返回null
      */
+    public String pickOneSolutionAndPutIntoProcessingQueue(){
+        /**
+         * 创建一个事务，保存所有命令一次执行完成
+         */
+        SessionCallback<Solution> callback = new SessionCallback() {
+
+            @Override
+            public Object execute(RedisOperations operations) throws DataAccessException {
+                operations.multi();
+                String solutionId = (String) operations.opsForList().leftPop(pendingQueueName);
+                operations.opsForList().rightPush(pendingQueueName,solutionId);
+                operations.exec();
+                return solutionId;
+            }
+        };
+
+
+        try{
+            String solutionId = (String) redisTemplate.execute(callback);
+            return solutionId;
+        }catch (Exception ex){
+            log.error("Error in pickOneSolutionAndPutIntoProcessingQueue !");
+            return null;
+        }
+    }
 }
