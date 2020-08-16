@@ -4,6 +4,7 @@ import cn.heyuantao.onlinejudgeserver.core.Problem;
 import cn.heyuantao.onlinejudgeserver.core.Result;
 import cn.heyuantao.onlinejudgeserver.core.Solution;
 import cn.heyuantao.onlinejudgeserver.core.UUIDGenerator;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
 class RedisServiceTest {
@@ -27,6 +30,11 @@ class RedisServiceTest {
 
     @Autowired
     RedisTemplate redisTemplate;
+
+
+    private String pendingQueueName       = "PENDING";
+    private String processingQueueName    = "PROCESSING";
+    private String solutionPrefix         = "SOLUTION::";
 
     @Test
     void insertSolutionIntoRedis() {
@@ -67,5 +75,38 @@ class RedisServiceTest {
 
         System.out.println(doubleSet);
 
+    }
+
+    @Test
+    void getTimeStampInDoubleFormat() {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        Long toEpochSecond = localDateTime.toEpochSecond(ZoneOffset.of("+8"));
+        String str = Long.toBinaryString(toEpochSecond);
+        System.out.println(str);
+        System.out.println(str.length());
+    }
+
+    @Test
+    void clearExpiredSolution() throws InterruptedException {
+
+        redisTemplate.opsForZSet().add(processingQueueName,UUIDGenerator.generateSolutionKey(),redisService.getTimeStampInDoubleFormat());
+        redisTemplate.opsForZSet().add(processingQueueName,UUIDGenerator.generateSolutionKey(),redisService.getTimeStampInDoubleFormat());
+        redisTemplate.opsForZSet().add(processingQueueName,UUIDGenerator.generateSolutionKey(),redisService.getTimeStampInDoubleFormat());
+
+        //Thread.sleep(1000*2);
+
+        LocalDateTime localDateTime = LocalDateTime.now().minus(15, ChronoUnit.SECONDS);
+        Long endDateTimeInLongFormat = localDateTime.toEpochSecond(ZoneOffset.of("+8"));
+
+        Double begin = new Double(0);
+        Double end = endDateTimeInLongFormat.doubleValue();
+
+        Set<String> expiredSolutionIdSet = redisTemplate.opsForZSet().rangeByScore(processingQueueName, begin, end);
+
+        if(expiredSolutionIdSet.size()>0){
+            System.out.println("Some solution "+expiredSolutionIdSet+" expire for some reson !");
+        }else{
+            System.out.println("No expire solution");
+        }
     }
 }

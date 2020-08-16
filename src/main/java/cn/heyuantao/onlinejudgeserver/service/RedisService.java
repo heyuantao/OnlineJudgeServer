@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author he_yu
@@ -76,6 +78,7 @@ public class RedisService {
 
     /**
      * 从等待队列中移除一个任务，并将其加入待处理队列
+     * 被加入的队列是排序集合，加入的时候同时将时间戳做完分数一同加入，确保能够进行正常排序
      * @return 如果正常返回一个编号，否则返回null
      */
     public String pickOneSolutionAndPutIntoProcessingQueue(){
@@ -86,11 +89,14 @@ public class RedisService {
 
             @Override
             public Object execute(RedisOperations operations) throws DataAccessException {
+                /**
+                 * 时间戳，这个值被一块加入用于排序
+                 */
                 Double timeStampInDoubleFormat = getTimeStampInDoubleFormat();
 
                 operations.multi();
                 String solutionId = (String) operations.opsForList().leftPop(pendingQueueName);
-                operations.opsForZSet().add(processingQueueName,solutionId,timeStampInDoubleFormat);
+                operations.opsForZSet().add(processingQueueName, solutionId, timeStampInDoubleFormat);
                 operations.exec();
 
                 return solutionId;
@@ -108,6 +114,9 @@ public class RedisService {
     }
 
     /**
+     * 以秒的方式返回当前的时间，并将其返回值转变为浮点的格式
+     * 尽管Long到Double转换存在损失精度的可能
+     * 但只要确保Long的范围在 -2^52 and 2^52 之间,这个转换不会出现问题
      * @return 返回浮点值
      */
     public Double getTimeStampInDoubleFormat(){
@@ -115,13 +124,47 @@ public class RedisService {
         Long toEpochSecond = localDateTime.toEpochSecond(ZoneOffset.of("+8"));
         return toEpochSecond.doubleValue();
     }
+
     /**
-     * 检查Processing队列的任务，看看是否有些任务属于太长时间没有完成的，这些任务可能是判题机出错
-     * 导致的情况
-     * 每隔六秒执行一次
+     * 检查Processing队列的任务，看看是否有些任务属于太长时间没有完成的，这些任务可能是判题机出错导致的情况
+     * 每隔十秒执行一次,并清除超时5分钟的Solution
      */
-    @Scheduled(fixedRate = 6000)
-    public void clearUnfinishedSolution(){
-        System.out.println("Task run for clean solution!");
+    @Scheduled(fixedRate = 20000)
+    public void clearExpiredSolution(){
+        log.info("Clear the expire solution !");
+        LocalDateTime localDateTime = LocalDateTime.now().minus(5, ChronoUnit.MINUTES);
+        Long endDateTimeInLongFormat = localDateTime.toEpochSecond(ZoneOffset.of("+8"));
+        Double begin = new Double(0);
+        Double end = endDateTimeInLongFormat.doubleValue();
+        /**
+         * 获取五分钟以前的所有任务编号
+         */
+        Set<String> expiredSolutionIdSet = redisTemplate.opsForZSet().rangeByScore(processingQueueName, begin, end);
+
+        if(expiredSolutionIdSet.size()>0){
+            log.error("Some solution "+expiredSolutionIdSet+" expire for some reson !");
+        }else{
+            log.info("No expire solution found !");
+        }
+
+        /**
+         * 准备清除对应的题目信息
+         */
+        for(String oneSolutionId:expiredSolutionIdSet){
+            /**
+             * 先清除待处理队列中的内容
+             */
+            redisTemplate.opsForZSet().remove(processingQueueName, oneSolutionId);
+
+            /**
+             * 再清除题目的相关信息
+             */
+            String key = solutionPrefix+oneSolutionId;
+            if(redisTemplate.hasKey(key)){
+                redisTemplate.delete(key);
+            }else{
+                log.error("The solution "+key+" should exist !");
+            }
+        }
     }
 }
