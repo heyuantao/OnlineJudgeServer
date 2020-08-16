@@ -1,8 +1,10 @@
 package cn.heyuantao.onlinejudgeserver.controller;
 
+import cn.heyuantao.onlinejudgeserver.exception.MessageException;
 import cn.heyuantao.onlinejudgeserver.service.OnlineJudgeClientService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.*;
 import java.util.List;
 
 /**
@@ -160,19 +163,28 @@ public class OnlineJudgeClientController {
     /**
      * 根据输入的文件名，返回对应的测试数据，输入的文件名通常为如下格式
      * ###################
-     * test1.in
-     * test1.out
-     * test2.in
-     * test2.out
+     * {solution_id}/test1.in
+     * {solution_id}/test1.out
+     * {solution_id}/test2.in
+     * {solution_id}/test2.out
      * ####################
-     * @param filename 文件名
+     * @param filenameWithPath 文件名
      * @return 测试数据的内容
      */
     @PostMapping("/gettestdatadata/")
     public ResponseEntity<String> getTestDataData(
-            @RequestParam(value = "filename") String filename
+            @RequestParam(value = "filename") String filenameWithPath
     ){
-        String content = onlineJudgeClientService.getTestFileByName(filename);
+        String[] strArray = StringUtils.split(filenameWithPath,"/");
+        if(strArray.length!=2){
+            String errorMessage = String.format("The file name '%s' not contain solution_id and test file name !",filenameWithPath);
+            log.error(errorMessage);
+            throw new MessageException(errorMessage);
+        }
+        String solutionId = strArray[0];
+        String filename = strArray[1];
+
+        String content = onlineJudgeClientService.getTestFileByName(solutionId, filename);
         return new ResponseEntity(content,HttpStatus.OK);
     }
 

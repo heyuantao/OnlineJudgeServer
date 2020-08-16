@@ -84,13 +84,13 @@ public class OnlineJudgeClientService {
     /**
      * 根据输入的文件名，返回对应的测试数据，输入的文件名通常为如下格式
      * ###################
-     * test1.in
-     * test1.out
-     * test2.in
-     * test2.out
+     * {solution_id}/test1.in
+     * {solution_id}/test1.out
+     * {solution_id}/test2.in
+     * {solution_id}/test2.out
      * ####################
      * */
-    public String getTestFileByName(String testFilename){
+    public String getTestFileByName(String solutionId, String testFilename){
         /**
          * 首先提取出文件中的数字，确保找到正确的测试数据
          */
@@ -98,20 +98,32 @@ public class OnlineJudgeClientService {
         String nameWithDigtal = null;
         nameWithDigtal = StringUtils.removeEndIgnoreCase(nameWithOutTest,".in");
         nameWithDigtal = StringUtils.removeEndIgnoreCase(nameWithDigtal,".out");
-        Integer number = Integer.parseInt(nameWithDigtal);
+        Integer index = Integer.parseInt(nameWithDigtal)-1;
 
         /**
          * 获取Solution中的TestCase
          */
-        Solution solution = redisService.getSolutionById()
+        Solution solution = redisService.getSolutionById(solutionId);
+        List<ProblemTestCase> testCaseList = solution.getProblem().getTestCaseList();
+
+        if( index > (testCaseList.size()-1) ){
+            String errorMessage = String.format("索引为 '%s' 的测试数据不存在",index);
+            log.error(errorMessage);
+            throw new MessageException(errorMessage);
+        }
+
+        /**
+         * 获取当前的测试用例
+         */
+        ProblemTestCase testCase = testCaseList.get(index);
 
         /**
          * 其次查找是输入还是输出文件
          */
         if(StringUtils.endsWithIgnoreCase(testFilename,".in")){
-
+            return testCase.getInput();
         }else if(StringUtils.endsWithIgnoreCase(testFilename,".out")){
-
+            return testCase.getTarget();
         }else{
             String errorMessage = String.format("Unsupport testfile name %s !",testFilename);
             log.error(errorMessage);
