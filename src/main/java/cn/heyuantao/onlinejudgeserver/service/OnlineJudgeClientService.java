@@ -45,6 +45,10 @@ public class OnlineJudgeClientService {
     }
 
 
+    public List<String> getTestDataList(String id){
+        return null;
+    }
+
     /**
      * 返回某个Soludion的程序代码
      * @param sid

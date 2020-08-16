@@ -2,6 +2,7 @@ package cn.heyuantao.onlinejudgeserver.controller;
 
 import cn.heyuantao.onlinejudgeserver.service.OnlineJudgeClientService;
 import io.swagger.annotations.Api;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +16,11 @@ import java.util.List;
  * @author he_yu
  * 处理来自判题机的各种请求
  */
+
+@Slf4j
 @Api(tags={"判题机接口"})
 @Controller
 @RequestMapping("/api/v1/onlinejudgeclient/")
-//@RequestMapping(path = {"abc","efg"})
 public class OnlineJudgeClientController {
 
     @Autowired
@@ -64,8 +66,8 @@ public class OnlineJudgeClientController {
 
     /**
      * 将编译错误的信息存放起来
-     * @param sid
-     * @param ceinfo
+     * @param sid solution的编号
+     * @param ceinfo  编译错误信息
      * @return
      */
     @PostMapping("/addcompileerrorinformation/")
@@ -136,13 +138,19 @@ public class OnlineJudgeClientController {
     /**
      * 以列表的方式返回测试数据
      * @param pid
-     * @return
+     * @return 返回内容如下
+     * test01.in
+     * test01.out
+     * test02.in
+     * test02.out
      */
     @PostMapping("/gettestdatalist/")
     public ResponseEntity<String> getTestDataList(
             @RequestParam(value = "pid") String pid
     ){
-        return null;
+        List<String> testDataList = onlineJudgeClientService.getTestDataList(pid);
+        String conent = listStringToMultiLineContent(testDataList);
+        return new ResponseEntity(conent,HttpStatus.OK);
     }
 
 
@@ -155,19 +163,23 @@ public class OnlineJudgeClientController {
     public ResponseEntity<String> getTestDataData(
             @RequestParam(value = "filename") String filename
     ){
+
         return null;
     }
 
     /**
+     * 该接口仅仅用于提供对判题机原有接口的兼容性，实际并没有什么用途
      * 根据输入的文件名，返回测试文件的日期
      * @param filename
-     * @return 日期（以字符串方式显示）
+     * @return 日期（以字符串方式显示） 注意，必须以Linux下 stat.st_mtime的格式进行返回
      */
     @PostMapping("/gettestdatadate/")
     public ResponseEntity<String> getTestDataDate(
             @RequestParam(value = "filename") String filename
     ){
-        return null;
+        String errorMessage = String.format("This api %s should not be called !","/gettestdatadate/");
+        log.error(errorMessage);
+        return new ResponseEntity<String>("",HttpStatus.OK);
     }
 
     /**
@@ -178,7 +190,9 @@ public class OnlineJudgeClientController {
     public ResponseEntity<String> updateProblemInformation(
             @RequestParam(value = "pid") String pid
     ){
-        return null;
+        String errorMessage = String.format("This api %s should not be called !","/updateprobleminformation/");
+        log.error(errorMessage);
+        return new ResponseEntity<String>("",HttpStatus.OK);
     }
 
     /**
@@ -190,6 +204,8 @@ public class OnlineJudgeClientController {
     public ResponseEntity<String> updateUserInformation(
             @RequestParam(value = "user_id") String user_id
     ){
+        String errorMessage = String.format("This api %s should not be called !","/updateuserinformation/");
+        log.error(errorMessage);
         return new ResponseEntity<String>("",HttpStatus.OK);
     }
 
