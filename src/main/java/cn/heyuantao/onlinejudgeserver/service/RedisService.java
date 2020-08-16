@@ -75,6 +75,23 @@ public class RedisService {
         }
     }
 
+    /**
+     * 获取一个Solution,如果出错则返回null
+     * @param id
+     * @return
+     */
+    public Solution getSolutionById(String id){
+        String key = solutionPrefix+id;
+        Solution solution = null;
+        try{
+            solution = (Solution) redisTemplate.opsForValue().get(key);
+            return solution;
+        }catch (Exception ex){
+            String errorMessage = String.format("getSolutionById error on %s",id);
+            log.error(errorMessage);
+            return null;
+        }
+    }
 
     /**
      * 从等待队列中移除一个任务，并将其加入待处理队列

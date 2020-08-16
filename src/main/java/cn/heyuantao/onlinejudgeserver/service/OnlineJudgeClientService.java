@@ -1,5 +1,9 @@
 package cn.heyuantao.onlinejudgeserver.service;
 
+import cn.heyuantao.onlinejudgeserver.core.Problem;
+import cn.heyuantao.onlinejudgeserver.core.ProblemTestCase;
+import cn.heyuantao.onlinejudgeserver.core.Solution;
+import cn.heyuantao.onlinejudgeserver.exception.MessageException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,8 +49,33 @@ public class OnlineJudgeClientService {
     }
 
 
+    /**
+     * 根据Solution的ID，生成输入和输出的文件对，样例如下
+     * ##################
+     * test1.in
+     * test1.out
+     * test2.in
+     * test2.out
+     * ################
+     * @param id
+     * @return
+     */
     public List<String> getTestDataList(String id){
-        return null;
+        List<String> stringList = new ArrayList<>();
+
+        Solution solution = redisService.getSolutionById(id);
+        if(solution==null){
+            throw new MessageException("Can not find solution "+id);
+        }
+
+        List<ProblemTestCase> testCaseList = solution.getProblem().getTestCaseList();
+        for(int i=0;i<testCaseList.size();i++){
+            String testInFilename = String.format("test%d.in",i);
+            String testOutFileName = String.format("test%d.out",i);
+            stringList.add(testInFilename);
+            stringList.add(testOutFileName);
+        }
+        return stringList;
     }
 
     /**

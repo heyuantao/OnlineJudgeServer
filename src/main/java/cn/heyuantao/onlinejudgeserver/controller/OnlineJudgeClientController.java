@@ -137,20 +137,23 @@ public class OnlineJudgeClientController {
 
     /**
      * 以列表的方式返回测试数据
+     * ###################
+     * test1.in
+     * test1.out
+     * test2.in
+     * test2.out
+     * ####################
      * @param pid
      * @return 返回内容如下
-     * test01.in
-     * test01.out
-     * test02.in
-     * test02.out
+
      */
     @PostMapping("/gettestdatalist/")
     public ResponseEntity<String> getTestDataList(
-            @RequestParam(value = "pid") String pid
+            @Validated @RequestParam(value = "pid") String pid
     ){
         List<String> testDataList = onlineJudgeClientService.getTestDataList(pid);
-        String conent = listStringToMultiLineContent(testDataList);
-        return new ResponseEntity(conent,HttpStatus.OK);
+        String content = listStringToMultiLineContent(testDataList);
+        return new ResponseEntity(content,HttpStatus.OK);
     }
 
 
