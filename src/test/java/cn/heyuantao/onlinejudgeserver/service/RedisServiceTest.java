@@ -8,11 +8,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,6 +24,9 @@ class RedisServiceTest {
 
     @Autowired
     RedisService redisService;
+
+    @Autowired
+    RedisTemplate redisTemplate;
 
     @Test
     void insertSolutionIntoRedis() {
@@ -40,5 +45,27 @@ class RedisServiceTest {
         LocalDateTime localDateTime = LocalDateTime.now();
         Long timeStamp = localDateTime.toEpochSecond(ZoneOffset.of("+8"));
         System.out.println(timeStamp);
+    }
+
+    @Test
+    void timeStampRangeFormat() throws InterruptedException {
+        Double value = null;
+        Double old = null;
+        value =redisService.getTimeStampInDoubleFormat();
+        redisTemplate.opsForZSet().add("test",1,value);
+        value =redisService.getTimeStampInDoubleFormat();
+        redisTemplate.opsForZSet().add("test",2,value);
+        value =redisService.getTimeStampInDoubleFormat();
+        redisTemplate.opsForZSet().add("test",3,value);
+
+        Thread.sleep(1000);
+
+        value = redisService.getTimeStampInDoubleFormat();
+        old = value;
+        redisTemplate.opsForZSet().add("test",4,value);
+        Set<Double> doubleSet = redisTemplate.opsForZSet().rangeByScore("test",old ,value);
+
+        System.out.println(doubleSet);
+
     }
 }

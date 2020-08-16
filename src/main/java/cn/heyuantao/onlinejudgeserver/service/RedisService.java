@@ -86,11 +86,13 @@ public class RedisService {
 
             @Override
             public Object execute(RedisOperations operations) throws DataAccessException {
-                Double score = getTimeStampInLongFormat();
+                Double timeStampInDoubleFormat = getTimeStampInDoubleFormat();
+
                 operations.multi();
                 String solutionId = (String) operations.opsForList().leftPop(pendingQueueName);
-                operations.opsForZSet().add(processingQueueName,solutionId,timeStamp);
+                operations.opsForZSet().add(processingQueueName,solutionId,timeStampInDoubleFormat);
                 operations.exec();
+
                 return solutionId;
             }
         };
@@ -105,10 +107,13 @@ public class RedisService {
         }
     }
 
-    public Long getTimeStampInDoubleFormat(){
+    /**
+     * @return 返回浮点值
+     */
+    public Double getTimeStampInDoubleFormat(){
         LocalDateTime localDateTime = LocalDateTime.now();
         Long toEpochSecond = localDateTime.toEpochSecond(ZoneOffset.of("+8"));
-        return toEpochSecond;
+        return toEpochSecond.doubleValue();
     }
     /**
      * 检查Processing队列的任务，看看是否有些任务属于太长时间没有完成的，这些任务可能是判题机出错
