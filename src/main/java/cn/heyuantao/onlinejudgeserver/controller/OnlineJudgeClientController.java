@@ -158,7 +158,13 @@ public class OnlineJudgeClientController {
 
 
     /**
-     * 根据输入的文件名，返回对应的测试数据
+     * 根据输入的文件名，返回对应的测试数据，输入的文件名通常为如下格式
+     * ###################
+     * test1.in
+     * test1.out
+     * test2.in
+     * test2.out
+     * ####################
      * @param filename 文件名
      * @return 测试数据的内容
      */
@@ -166,9 +172,10 @@ public class OnlineJudgeClientController {
     public ResponseEntity<String> getTestDataData(
             @RequestParam(value = "filename") String filename
     ){
-
-        return null;
+        String content = onlineJudgeClientService.getTestFileByName(filename);
+        return new ResponseEntity(content,HttpStatus.OK);
     }
+
 
     /**
      * 该接口仅仅用于提供对判题机原有接口的兼容性，实际并没有什么用途

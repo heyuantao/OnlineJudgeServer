@@ -4,6 +4,8 @@ import cn.heyuantao.onlinejudgeserver.core.Problem;
 import cn.heyuantao.onlinejudgeserver.core.ProblemTestCase;
 import cn.heyuantao.onlinejudgeserver.core.Solution;
 import cn.heyuantao.onlinejudgeserver.exception.MessageException;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,7 @@ import java.util.List;
  * @author he_yu
  * 将用户的数据存储在Redis中
  */
+@Slf4j
 @Service
 public class OnlineJudgeClientService {
 
@@ -76,6 +79,44 @@ public class OnlineJudgeClientService {
             stringList.add(testOutFileName);
         }
         return stringList;
+    }
+
+    /**
+     * 根据输入的文件名，返回对应的测试数据，输入的文件名通常为如下格式
+     * ###################
+     * test1.in
+     * test1.out
+     * test2.in
+     * test2.out
+     * ####################
+     * */
+    public String getTestFileByName(String testFilename){
+        /**
+         * 首先提取出文件中的数字，确保找到正确的测试数据
+         */
+        String nameWithOutTest = StringUtils.removeIgnoreCase(testFilename,"test");
+        String nameWithDigtal = null;
+        nameWithDigtal = StringUtils.removeEndIgnoreCase(nameWithOutTest,".in");
+        nameWithDigtal = StringUtils.removeEndIgnoreCase(nameWithDigtal,".out");
+        Integer number = Integer.parseInt(nameWithDigtal);
+
+        /**
+         * 获取Solution中的TestCase
+         */
+        Solution solution = redisService.getSolutionById()
+
+        /**
+         * 其次查找是输入还是输出文件
+         */
+        if(StringUtils.endsWithIgnoreCase(testFilename,".in")){
+
+        }else if(StringUtils.endsWithIgnoreCase(testFilename,".out")){
+
+        }else{
+            String errorMessage = String.format("Unsupport testfile name %s !",testFilename);
+            log.error(errorMessage);
+            throw new MessageException(errorMessage);
+        }
     }
 
     /**
