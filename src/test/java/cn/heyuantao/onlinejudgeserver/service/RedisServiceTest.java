@@ -36,7 +36,7 @@ class RedisServiceTest {
     }
 
     @Test
-    void timeStampTest() {
+    void timeStampDisplayTest() {
         LocalDateTime localDateTime = LocalDateTime.now();
         Long timeStamp = localDateTime.toEpochSecond(ZoneOffset.of("+8"));
         System.out.println(timeStamp);
