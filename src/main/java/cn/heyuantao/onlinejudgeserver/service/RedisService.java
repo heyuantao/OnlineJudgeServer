@@ -4,12 +4,14 @@ import cn.heyuantao.onlinejudgeserver.core.Solution;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 /**
@@ -26,8 +28,8 @@ public class RedisService {
     /**
      * 在Redis要存储三种类型的信息
      * 1、Solution本身，用SOLUTION作为前缀
-     * 2、PENDING队列，存储待待处理的SOLUTION
-     * 3、PROCESSING队列，存储正在处理的SOLUTION
+     * 2、PENDING队列，存储待待处理的SOLUTION, 该队列的类型为LIST
+     * 3、PROCESSING队列，存储正在处理的SOLUTION，该队列的类型为有序集合
      */
     private String pendingQueueName       = "PENDING";
     private String processingQueueName    = "PROCESSING";
@@ -84,9 +86,12 @@ public class RedisService {
 
             @Override
             public Object execute(RedisOperations operations) throws DataAccessException {
+                LocalDateTime localDateTime = LocalDateTime.now();
+                Long timeStamp = localDateTime.toEpochSecond(ZoneOffset.of("+8"));
                 operations.multi();
                 String solutionId = (String) operations.opsForList().leftPop(pendingQueueName);
-                operations.opsForList().rightPush(pendingQueueName,solutionId);
+                //operations.opsForSet().add(processingQueueName,solutionId);
+                operations.opsForZSet().add(processingQueueName,solutionId,timeStamp);
                 operations.exec();
                 return solutionId;
             }
@@ -100,5 +105,15 @@ public class RedisService {
             log.error("Error in pickOneSolutionAndPutIntoProcessingQueue !");
             return null;
         }
+    }
+
+    /**
+     * 检查Processing队列的任务，看看是否有些任务属于太长时间没有完成的，这些任务可能是判题机出错
+     * 导致的情况
+     * 每隔六秒执行一次
+     */
+    @Scheduled(fixedRate = 6000)
+    public void clearUnfinishedSolution(){
+        System.out.println("Task run for clean solution!");
     }
 }
