@@ -145,6 +145,69 @@ public class OnlineJudgeClientController {
         return null;
     }
 
+
+    /**
+     * 根据输入的文件名，返回对应的测试数据
+     * @param filename 文件名
+     * @return 测试数据的内容
+     */
+    @PostMapping("/gettestdatadata/")
+    public ResponseEntity<String> getTestDataData(
+            @RequestParam(value = "filename") String filename
+    ){
+        return null;
+    }
+
+    /**
+     * 根据输入的文件名，返回测试文件的日期
+     * @param filename
+     * @return 日期（以字符串方式显示）
+     */
+    @PostMapping("/gettestdatadate/")
+    public ResponseEntity<String> getTestDataDate(
+            @RequestParam(value = "filename") String filename
+    ){
+        return null;
+    }
+
+    /**
+     * 该接口仅仅用于提供对判题机原有接口的兼容性，实际并没有什么用途
+     * 该接口仅仅用于更新该题目作对的数量，实际中没什么用
+     */
+    @PostMapping("/updateprobleminformation/")
+    public ResponseEntity<String> updateProblemInformation(
+            @RequestParam(value = "pid") String pid
+    ){
+        return null;
+    }
+
+    /**
+     * 该接口仅仅用于提供对判题机原有接口的兼容性，实际并没有什么用途
+     * 判题机端用该接口更新某个用户作对题目的数量
+     * @return 返回空值
+     */
+    @PostMapping("/updateuserinformation/")
+    public ResponseEntity<String> updateUserInformation(
+            @RequestParam(value = "user_id") String user_id
+    ){
+        return new ResponseEntity<String>("",HttpStatus.OK);
+    }
+
+
+    /**
+     * 将List<String>的内容转成一个字符串并返回，字符串用换行符分割
+     * @param list 每个元素为一个字符串
+     * @return 返回一个字符串
+     */
+    private String listStringToMultiLineContent(List<String> list){
+        StringBuilder stringBuilder = new StringBuilder();
+        for(String item:list){
+            stringBuilder.append(item);
+            stringBuilder.append("\n");
+        }
+        return stringBuilder.toString();
+    }
+
     /**
      * 该方法用于测试盘端的连通性,该部分的代码为其他部分的编写提供了样例
      * @param sid
@@ -165,18 +228,5 @@ public class OnlineJudgeClientController {
         stringBuilder.append("world");
         stringBuilder.append("\n");
         return new ResponseEntity(stringBuilder.toString(),HttpStatus.OK);
-    }
-
-
-    /**
-     * 将List<String>中的内容以换行的方式输出到字符串中
-     */
-    private String listStringToMultiLineContent(List<String> list){
-        StringBuilder stringBuilder = new StringBuilder();
-        for(String item:list){
-            stringBuilder.append(item);
-            stringBuilder.append("\n");
-        }
-        return stringBuilder.toString();
     }
 }
