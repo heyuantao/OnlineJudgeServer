@@ -4,7 +4,11 @@ import cn.heyuantao.onlinejudgeserver.core.UUIDGenerator;
 import cn.heyuantao.onlinejudgeserver.core.Problem;
 import cn.heyuantao.onlinejudgeserver.core.Result;
 import cn.heyuantao.onlinejudgeserver.core.Solution;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author he_yu
@@ -12,6 +16,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class OnlineJudgeServerService {
+
+    @Autowired
+    RedisService redisService;
 
     /**
      * 根据输入的问题，保存到Redis中，并将对应的ID返回
@@ -30,4 +37,6 @@ public class OnlineJudgeServerService {
 
         return solution;
     }
+
+
 }

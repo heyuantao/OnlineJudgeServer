@@ -127,7 +127,8 @@ public class RedisService {
 
     /**
      * 检查Processing队列的任务，看看是否有些任务属于太长时间没有完成的，这些任务可能是判题机出错导致的情况
-     * 每隔十秒执行一次,并清除超时5分钟的Solution
+     * 每隔二十秒执行一次,并清除超时5分钟以前的Solution
+     * 一个题目在提交后会保存为一个Solution，如果超过五分钟该题目仍然没有被解决可能对应的判题机出错
      */
     @Scheduled(fixedRate = 20000)
     public void clearExpiredSolution(){

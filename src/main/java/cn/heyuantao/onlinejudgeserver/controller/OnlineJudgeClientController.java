@@ -24,15 +24,15 @@ public class OnlineJudgeClientController {
     @Autowired
     OnlineJudgeClientService onlineJudgeClientService;
 
+    /**
+     * 返回待处理的题目编号
+     * @return
+     */
     @PostMapping("/getjobs/")
     public ResponseEntity<String> getJobs(){
-        List<String> jobs = onlineJudgeClientService.getJobs();
-        StringBuilder stringBuilder = new StringBuilder();
-        for(String oneLine:jobs){
-            stringBuilder.append(oneLine);
-            stringBuilder.append("\n");
-        }
-        return new ResponseEntity(stringBuilder.toString(),HttpStatus.ACCEPTED);
+        List<String> jobs = onlineJudgeClientService.getJobs(5);
+        String content = listStringToMultiLineContent(jobs);
+        return new ResponseEntity(content,HttpStatus.ACCEPTED);
     }
 
 
@@ -70,6 +70,7 @@ public class OnlineJudgeClientController {
     }
 
 
+
     /**
      * 该方法用于测试盘端的连通性,该部分的代码为其他部分的编写提供了样例
      * @param sid
@@ -90,5 +91,18 @@ public class OnlineJudgeClientController {
         stringBuilder.append("world");
         stringBuilder.append("\n");
         return new ResponseEntity(stringBuilder.toString(),HttpStatus.OK);
+    }
+
+
+    /**
+     * 将List<String>中的内容以换行的方式输出到字符串中
+     */
+    private String listStringToMultiLineContent(List<String> list){
+        StringBuilder stringBuilder = new StringBuilder();
+        for(String item:list){
+            stringBuilder.append(item);
+            stringBuilder.append("\n");
+        }
+        return stringBuilder.toString();
     }
 }
