@@ -36,6 +36,17 @@ public class OnlineJudgeClientController {
     }
 
 
+    /**
+     * 更新某个题目的状态，每当题目的判题状态发生改变时会由判题机发出相应的请求
+     * @param sid
+     * @param result
+     * @param time
+     * @param memory
+     * @param sim
+     * @param sim_id
+     * @param pass_rate
+     * @return
+     */
     @PostMapping("/updatesolution/")
     public ResponseEntity<String> updateSolution(
             @RequestParam(value="sid") String sid,
@@ -51,6 +62,12 @@ public class OnlineJudgeClientController {
     }
 
 
+    /**
+     * 将编译错误的信息存放起来
+     * @param sid
+     * @param ceinfo
+     * @return
+     */
     @PostMapping("/addcompileerrorinformation/")
     public ResponseEntity<String> addCompileErrorInformation(
             @RequestParam(value="sid") String sid,
@@ -61,15 +78,72 @@ public class OnlineJudgeClientController {
     }
 
 
+    /**
+     * 获取某个Solution中用户提交的代码
+     * @param sid
+     * @return
+     */
     @PostMapping("/getsolution/")
     public ResponseEntity<String> getSolution(
             @RequestParam(value="sid") String sid
     ){
         String solution_content = onlineJudgeClientService.getSolution(sid);
-        return new ResponseEntity(solution_content,HttpStatus.ACCEPTED);
+        return null;
+        //return new ResponseEntity(solution_content,HttpStatus.ACCEPTED);
     }
 
 
+    /**
+     * 获取某个Solution中的其他信息，即问题的编号、用户名和语言的类型编号
+     * @param sid
+     * @return problem,username,lang
+     */
+    @PostMapping("/getsolutioninformation/")
+    public ResponseEntity<String> getSolutionInformation(
+            @RequestParam(value="sid") String sid
+    ){
+        return null;
+    }
+
+
+    /**
+     * 获取某个Problem的相应信息
+     * @param pid 问题的编号
+     * @return String time_limit,String mem_limit,String isspj,
+     */
+    @PostMapping("/getprobleminformation/")
+    public ResponseEntity<String> getProblemInformation(
+            @RequestParam(value="pid") String pid
+    ){
+        return null;
+    }
+
+
+    /**
+     * 处理程序运行时的错误信息
+     * @param sid  Solution的编号
+     * @param reinfo  运行的错误信息
+     * @return 不返回任何内容
+     */
+    @PostMapping("/addruningerrorinformation/")
+    public ResponseEntity<String> addRuningErrorInformation(
+            @RequestParam(value = "sid") String sid,
+            @RequestParam(value = "reinfo") String reinfo
+    ){
+        return null;
+    }
+
+    /**
+     * 以列表的方式返回测试数据
+     * @param pid
+     * @return
+     */
+    @PostMapping("/gettestdatalist/")
+    public ResponseEntity<String> getTestDataList(
+            @RequestParam(value = "pid") String pid
+    ){
+        return null;
+    }
 
     /**
      * 该方法用于测试盘端的连通性,该部分的代码为其他部分的编写提供了样例
