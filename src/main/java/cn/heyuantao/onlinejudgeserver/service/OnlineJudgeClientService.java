@@ -27,17 +27,17 @@ public class OnlineJudgeClientService {
     /**
      * 从队列中返回几个任务，并确保返回任务数量不超过maxJobs
      */
-    public List<String> getJobs(Integer maxJobs){
+    public List<String> getJobs(Integer maxJobs) {
         List<String> list = new ArrayList<String>();
-        Integer retryCount =0;
-        for(;;){
+        Integer retryCount = 0;
+        for (; ; ) {
             String id = redisService.pickOneSolutionAndPutIntoProcessingQueue();
-            if(id!=null){
+            if (id != null) {
                 list.add(id);
-            }else{
-                retryCount = retryCount +1;
+            } else {
+                retryCount = retryCount + 1;
             }
-            if( (retryCount>2)||(list.size()>maxJobs) ){
+            if ((retryCount > 2) || (list.size() > maxJobs)) {
                 return list;
             }
         }
@@ -60,45 +60,61 @@ public class OnlineJudgeClientService {
      * test2.in
      * test2.out
      * ################
+     *
      * @param id
      * @return
      */
-    public List<String> getTestDataList(String id){
+    public List<String> getTestDataList(String id) {
         List<String> stringList = new ArrayList<>();
 
         Solution solution = redisService.getSolutionById(id);
-        if(solution==null){
-            throw new MessageException("Can not find solution "+id);
+        if (solution == null) {
+            throw new MessageException("Can not find solution " + id);
         }
 
         List<ProblemTestCase> testCaseList = solution.getProblem().getTestCaseList();
-        for(int i=0;i<testCaseList.size();i++){
-            String testInFilename = String.format("test%d.in",i);
-            String testOutFileName = String.format("test%d.out",i);
+        for (int i = 0; i < testCaseList.size(); i++) {
+            String testInFilename = String.format("test%d.in", i);
+            String testOutFileName = String.format("test%d.out", i);
             stringList.add(testInFilename);
             stringList.add(testOutFileName);
         }
         return stringList;
     }
 
+
     /**
-     * 根据输入的文件名，返回对应的测试数据，输入的文件名通常为如下格式
-     * ###################
-     * {solution_id}/test1.in
-     * {solution_id}/test1.out
-     * {solution_id}/test2.in
-     * {solution_id}/test2.out
-     * ####################
-     * */
-    public String getTestFileByName(String solutionId, String testFilename){
+     * 根据SolutionId和testFilename来获取相应的测试数据,在控制器层面以"soludionId/testFilename"的形式进行请求，
+     * 在服务层面将这两部分进行分开
+     *
+     * @param solutionId   类似的形式为"23423423423"
+     * @param testFilename 类似的形式为test0.in，test0.out,test1.in,test1.out
+     * @return
+     */
+    public String getTestFileByName(String solutionId, String testFilename) {
+
+        /**
+         * 检查文件名是否正确，该部分之应该包含不带路径的文件名，且以.in或.out结束
+         */
+        if (StringUtils.contains(testFilename, "/")) {
+            String errorMessage = String.format("文件的名字不能包含 %s 字符", "/");
+            log.error(errorMessage);
+            throw new MessageException(errorMessage);
+        }
+        if ((!StringUtils.endsWith(testFilename, ".in")) && (!(StringUtils.endsWith(testFilename, ".out")))) {
+            String errorMessage = String.format("文件的名字不能包含必须以%s 或 %s 结束", ".in", ".out");
+            log.error(errorMessage);
+            throw new MessageException(errorMessage);
+        }
+
         /**
          * 首先提取出文件中的数字，确保找到正确的测试数据
          */
-        String nameWithOutTest = StringUtils.removeIgnoreCase(testFilename,"test");
+        String nameWithOutTest = StringUtils.removeIgnoreCase(testFilename, "test");
         String nameWithDigtal = null;
-        nameWithDigtal = StringUtils.removeEndIgnoreCase(nameWithOutTest,".in");
-        nameWithDigtal = StringUtils.removeEndIgnoreCase(nameWithDigtal,".out");
-        Integer index = Integer.parseInt(nameWithDigtal)-1;
+        nameWithDigtal = StringUtils.removeEndIgnoreCase(nameWithOutTest, ".in");
+        nameWithDigtal = StringUtils.removeEndIgnoreCase(nameWithDigtal, ".out");
+        Integer index = Integer.parseInt(nameWithDigtal);
 
         /**
          * 获取Solution中的TestCase
@@ -106,8 +122,8 @@ public class OnlineJudgeClientService {
         Solution solution = redisService.getSolutionById(solutionId);
         List<ProblemTestCase> testCaseList = solution.getProblem().getTestCaseList();
 
-        if( index > (testCaseList.size()-1) ){
-            String errorMessage = String.format("索引为 '%s' 的测试数据不存在",index);
+        if (index > (testCaseList.size() - 1)) {
+            String errorMessage = String.format("索引为 '%s' 的测试数据不存在", index);
             log.error(errorMessage);
             throw new MessageException(errorMessage);
         }
@@ -120,26 +136,20 @@ public class OnlineJudgeClientService {
         /**
          * 其次查找是输入还是输出文件
          */
-        if(StringUtils.endsWithIgnoreCase(testFilename,".in")){
+        if (StringUtils.endsWithIgnoreCase(testFilename, ".in")) {
             return testCase.getInput();
-        }else if(StringUtils.endsWithIgnoreCase(testFilename,".out")){
+        } else if (StringUtils.endsWithIgnoreCase(testFilename, ".out")) {
             return testCase.getTarget();
-        }else{
-            String errorMessage = String.format("Unsupport testfile name %s !",testFilename);
+        } else {
+            String errorMessage = String.format("Unsupport testfile name %s !", testFilename);
             log.error(errorMessage);
             throw new MessageException(errorMessage);
         }
     }
 
-    /**
-     * 返回某个Soludion的程序代码
-     * @param sid
-     * @return
-     */
-    public String getSolution(String sid) {
+    public String getSolution(String sid){
+        Solution solution = redisService.getSolutionById(sid);
 
-        return "";
+        return null;
     }
-
-
 }

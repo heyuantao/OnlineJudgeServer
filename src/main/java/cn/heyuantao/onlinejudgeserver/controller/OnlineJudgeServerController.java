@@ -68,7 +68,7 @@ public class OnlineJudgeServerController {
         ProblemResourceLimit problemResourceLimit = new ProblemResourceLimit();
         problemResourceLimit.setMemoryLimit(problemRequestDTO.getMemoryLimit());
         problemResourceLimit.setTimeLimit(problemRequestDTO.getTimeLimit());
-        problemResourceLimit.setSpecialJudge(problemRequestDTO.getIsSpecialJudge());
+        problemResourceLimit.setIsSpecialJudge(problemRequestDTO.getIsSpecialJudge());
         problem.setProblemResourceLimit(problemResourceLimit);
 
         problem.setTestCaseList(problemRequestDTO.getTestCaseList());

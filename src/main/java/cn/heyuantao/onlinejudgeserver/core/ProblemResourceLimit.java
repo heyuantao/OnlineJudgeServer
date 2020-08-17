@@ -1,6 +1,8 @@
 package cn.heyuantao.onlinejudgeserver.core;
 
 import io.swagger.models.auth.In;
+import lombok.Data;
+import lombok.ToString;
 
 import java.io.Serializable;
 
@@ -8,6 +10,8 @@ import java.io.Serializable;
  * @author he_yu
  * 题目的资源限制
  */
+@Data
+@ToString
 public class ProblemResourceLimit implements Serializable {
     private Integer timeLimit;
     private Integer memoryLimit;
@@ -23,41 +27,9 @@ public class ProblemResourceLimit implements Serializable {
      * 默认的代码运行资源限制和其他要求
      */
     public ProblemResourceLimit() {
-        this.timeLimit = 10;
+        this.timeLimit = 2;
         this.memoryLimit = 512;
         this.isSpecialJudge = Boolean.FALSE;
     }
 
-    public Integer getTimeLimit() {
-        return timeLimit;
-    }
-
-    public void setTimeLimit(Integer timeLimit) {
-        this.timeLimit = timeLimit;
-    }
-
-    public Integer getMemoryLimit() {
-        return memoryLimit;
-    }
-
-    public void setMemoryLimit(Integer memoryLimit) {
-        this.memoryLimit = memoryLimit;
-    }
-
-    public Boolean getSpecialJudge() {
-        return isSpecialJudge;
-    }
-
-    public void setSpecialJudge(Boolean specialJudge) {
-        isSpecialJudge = specialJudge;
-    }
-
-    @Override
-    public String toString() {
-        return "ProblemResourceLimit{" +
-                "timeLimit=" + timeLimit +
-                ", memoryLimit=" + memoryLimit +
-                ", isSpecialJudge=" + isSpecialJudge +
-                '}';
-    }
 }

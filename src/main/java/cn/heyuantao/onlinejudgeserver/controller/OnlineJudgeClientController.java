@@ -1,18 +1,23 @@
 package cn.heyuantao.onlinejudgeserver.controller;
 
+import cn.heyuantao.onlinejudgeserver.exception.BindingResultException;
 import cn.heyuantao.onlinejudgeserver.exception.MessageException;
 import cn.heyuantao.onlinejudgeserver.service.OnlineJudgeClientService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.swing.*;
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 /**
@@ -22,6 +27,7 @@ import java.util.List;
 
 @Slf4j
 @Api(tags={"判题机接口"})
+@Validated
 @Controller
 @RequestMapping("/api/v1/onlinejudgeclient/")
 public class OnlineJudgeClientController {
@@ -90,11 +96,16 @@ public class OnlineJudgeClientController {
      */
     @PostMapping("/getsolution/")
     public ResponseEntity<String> getSolution(
-            @RequestParam(value="sid") String sid
+            @Length(min=5,max = 20,message = "参数长度应在5-20之间") @NotEmpty @RequestParam(value="sid") String sid
     ){
+        System.out.println(sid);
+/*        if(bindingResult.hasErrors()){
+            System.out.println("Error !!!!!!");
+            System.out.println(bindingResult);
+            //throw new BindingResultException(bindingResult);
+        }*/
         String solution_content = onlineJudgeClientService.getSolution(sid);
-        return null;
-        //return new ResponseEntity(solution_content,HttpStatus.ACCEPTED);
+        return new ResponseEntity(solution_content,HttpStatus.OK);
     }
 
 
