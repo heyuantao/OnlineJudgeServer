@@ -35,7 +35,7 @@ public class RedisService {
      */
     private String pendingQueueName       = "PENDING";
     private String processingQueueName    = "PROCESSING";
-    private String solutionPrefix           = "SOLUTION::";
+    private String solutionPrefix         = "SOLUTION::";
 
     /**
      * 将Solution保存在Redis中，同时将其加入等待队列,
@@ -133,8 +133,8 @@ public class RedisService {
 
     /**
      * 从等待队列中移除一个任务，并将其加入待处理队列
-     * 被加入的队列是排序集合，加入的时候同时将时间戳做完分数一同加入，确保能够进行正常排序
-     * @return 如果正常返回一个编号，否则返回null
+     * 被加入的队列是排序集合，加入的时候同时将时间戳做完分数一同加入，确保能够进行正常排序,
+     * @return 如果正常返回一个编号，否则返回null . 如果队列为空，返回值也为null
      */
     public String pickOneSolutionAndPutIntoProcessingQueue(){
         /**

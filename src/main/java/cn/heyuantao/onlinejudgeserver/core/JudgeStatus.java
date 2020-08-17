@@ -1,11 +1,20 @@
 package cn.heyuantao.onlinejudgeserver.core;
 
+import cn.heyuantao.onlinejudgeserver.exception.MessageException;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.EnumUtils;
+import org.springframework.mail.MailException;
+
+import javax.swing.*;
+import java.util.List;
+
 /**
  * @author he_yu
  * 判题状态
  * 新添加的题目进入等待状态，判题时状态为判题中
  */
 
+@Slf4j
 public enum JudgeStatus {
 
     /**
@@ -70,5 +79,21 @@ public enum JudgeStatus {
         }else{
             return Boolean.FALSE;
         }
+    }
+
+    /**
+     * 根据对应的值来获取相应的枚举类型,如果未找到，则返回null
+     */
+    public static JudgeStatus getJudgeStatusByValue(Integer value){
+        List<JudgeStatus> judgeStatusList = EnumUtils.getEnumList(JudgeStatus.class);
+        for(JudgeStatus item:judgeStatusList){
+            if(item.getValue().equals(value)){
+                return item;
+            }
+        }
+
+        String errorMessage = String.format("Can not find JudgeStatus with value %d",value);
+        log.error(errorMessage);
+        throw new MessageException(errorMessage);
     }
 }

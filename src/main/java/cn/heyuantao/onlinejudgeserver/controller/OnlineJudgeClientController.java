@@ -63,13 +63,13 @@ public class OnlineJudgeClientController {
      */
     @PostMapping("/updatesolution/")
     public ResponseEntity<String> updateSolution(
-            @RequestParam(value="sid") String sid,
-            @RequestParam(value="result") String result,
-            @RequestParam(value="time") String time,
-            @RequestParam(value="memory") String memory,
-            @RequestParam(value="sim") String sim,
-            @RequestParam(value="sim_id") String sim_id,
-            @RequestParam(value="pass_rate") String pass_rate
+            @Length(min=5,max = 30,message = "参数长度应在5-30之间") @RequestParam(value="sid", required = true) String sid,
+            @RequestParam(value="result", required = true) String result,
+            @RequestParam(value="time", required = true) String time,
+            @RequestParam(value="memory", required = true) String memory,
+            @RequestParam(value="sim", required = true) String sim,
+            @RequestParam(value="sim_id", required = true) String sim_id,
+            @RequestParam(value="pass_rate", required = true) String pass_rate
     ){
         onlineJudgeClientService.updateSolution(sid,result,time,memory,sim,sim_id,pass_rate);
         return new ResponseEntity("",HttpStatus.ACCEPTED);

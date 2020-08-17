@@ -1,9 +1,6 @@
 package cn.heyuantao.onlinejudgeserver.service;
 
-import cn.heyuantao.onlinejudgeserver.core.Problem;
-import cn.heyuantao.onlinejudgeserver.core.ProblemTestCase;
-import cn.heyuantao.onlinejudgeserver.core.Result;
-import cn.heyuantao.onlinejudgeserver.core.Solution;
+import cn.heyuantao.onlinejudgeserver.core.*;
 import cn.heyuantao.onlinejudgeserver.exception.MessageException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -26,30 +23,74 @@ public class OnlineJudgeClientService {
 
 
     /**
-     * 从队列中返回几个任务，并确保返回任务数量不超过maxJobs
+     * 从等待队列中找到几个待处理的任务
+     * 返回任务数量不超过maxJobs
      */
     public List<String> getJobs(Integer maxJobs) {
         List<String> list = new ArrayList<String>();
+        /**
+         * 当前的任务数量可能小于maxJobs的数量，因此在该部分进行重试，一旦重试次数大于等于2则立即返回
+         */
         Integer retryCount = 0;
-        for (; ; ) {
+        for(;;) {
+            /**
+             * 先获取一个任务
+             */
             String id = redisService.pickOneSolutionAndPutIntoProcessingQueue();
             if (id != null) {
                 list.add(id);
             } else {
                 retryCount = retryCount + 1;
             }
-            if ((retryCount > 2) || (list.size() > maxJobs)) {
+            if ((retryCount > 2) || (list.size() >= maxJobs)) {
                 return list;
             }
         }
     }
 
+    /**
+     * 根据判题机推送过来的信息，更新在Redis中存储的题目判题结果信息
+     * @param sid
+     * @param result
+     * @param time
+     * @param memory
+     * @param sim
+     * @param sim_id
+     * @param pass_rate
+     */
     public void updateSolution(String sid, String result, String time, String memory, String sim, String sim_id, String pass_rate) {
+        Solution solution = redisService.getSolutionById(sid);
 
+        Result changedResult = solution.getResult();
+
+        JudgeStatus judgeStatus = JudgeStatus.getJudgeStatusByValue(Integer.parseInt(result));
+        changedResult.setJudgeStatus(judgeStatus);
+        changedResult.setTime(time);
+        changedResult.setMemory(memory);
+        changedResult.setSim(sim);
+        changedResult.setSimId(sim_id);
+        changedResult.setPassRate(Double.parseDouble(pass_rate));
+
+        solution.setResult(changedResult);
+
+        redisService.updateSolutionAtRedis(solution);
     }
 
+    /**
+     * 将编译错误的信息存放在数据库中
+     * @param sid
+     * @param ceinfo
+     */
     public void addCompileErrorInformation(String sid, String ceinfo) {
+        Solution solution = redisService.getSolutionById(sid);
 
+        Result changedResult = solution.getResult();
+
+        changedResult.setCompileErrorInformation(ceinfo);
+
+        solution.setResult(changedResult);
+
+        redisService.updateSolutionAtRedis(solution);
     }
 
 
