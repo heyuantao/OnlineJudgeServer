@@ -1,5 +1,6 @@
 package cn.heyuantao.onlinejudgeserver.controller;
 
+import cn.heyuantao.onlinejudgeserver.core.Solution;
 import cn.heyuantao.onlinejudgeserver.exception.BindingResultException;
 import cn.heyuantao.onlinejudgeserver.exception.MessageException;
 import cn.heyuantao.onlinejudgeserver.service.OnlineJudgeClientService;
@@ -156,7 +157,9 @@ public class OnlineJudgeClientController {
             @Length(min=5,max = 30,message = "参数长度应在5-30之间")  @RequestParam(value = "sid", required = true) String sid,
             @RequestParam(value = "reinfo",required = true) String reinfo
     ){
-        return null;
+        onlineJudgeClientService.addRuningErrorInformation(sid,reinfo);
+
+        return new ResponseEntity("",HttpStatus.OK);
     }
 
     /**
@@ -197,6 +200,7 @@ public class OnlineJudgeClientController {
             @RequestParam(value = "filename", required = true) String filenameWithPath
     ){
         String[] strArray = StringUtils.split(filenameWithPath,"/");
+
         if(strArray.length!=2){
             String errorMessage = String.format("The file name '%s' not contain solution_id and test file name !",filenameWithPath);
             log.error(errorMessage);

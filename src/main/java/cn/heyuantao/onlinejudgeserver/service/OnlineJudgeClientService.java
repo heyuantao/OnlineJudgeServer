@@ -2,6 +2,7 @@ package cn.heyuantao.onlinejudgeserver.service;
 
 import cn.heyuantao.onlinejudgeserver.core.Problem;
 import cn.heyuantao.onlinejudgeserver.core.ProblemTestCase;
+import cn.heyuantao.onlinejudgeserver.core.Result;
 import cn.heyuantao.onlinejudgeserver.core.Solution;
 import cn.heyuantao.onlinejudgeserver.exception.MessageException;
 import lombok.extern.slf4j.Slf4j;
@@ -172,5 +173,25 @@ public class OnlineJudgeClientService {
         Solution solution = redisService.getSolutionById(sid);
         Integer langTypeId =  solution.getProblem().getLanguageType().getValue();
         return langTypeId;
+    }
+
+    /**
+     * 将错误信息记录在Redis中
+     * @param sid  编号
+     * @param reinfo  运行错误信息
+     * @return
+     */
+    public Boolean addRuningErrorInformation(String sid,String reinfo){
+        Solution solution = redisService.getSolutionById(sid);
+        Result result = solution.getResult();
+        result.setRunErrorInformation(reinfo);
+        solution.setResult(result);
+
+        /**
+         * 更新相应的Solution信息
+         */
+        redisService.updateSolutionAtRedis(solution);
+
+        return Boolean.TRUE;
     }
 }

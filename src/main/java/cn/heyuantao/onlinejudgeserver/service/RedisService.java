@@ -76,6 +76,42 @@ public class RedisService {
     }
 
     /**
+     * 更新已经存在在redis中的某一个solution
+     * @param solution
+     * @return
+     */
+    public Boolean updateSolutionAtRedis(Solution solution){
+        /**
+         * 创建一个事务，保存所有命令一次执行完成
+         */
+        SessionCallback<Solution> callback = new SessionCallback() {
+
+            @Override
+            public Object execute(RedisOperations operations) throws DataAccessException {
+                /**
+                 * 将Solution更新到Redis中
+                 */
+                operations.multi();
+                String key = solutionPrefix+solution.getId();
+                operations.opsForValue().set(key,solution);
+                return operations.exec();
+            }
+        };
+
+
+        try{
+            /**
+             * 返回值为ArrayList<Object>,其中每个Object代表了命令的执行情况
+             */
+            List<Object> objectList = (List<Object>) redisTemplate.execute(callback);
+            return Boolean.TRUE;
+        }catch (Exception ex){
+            log.error("Error in updateSolutionAtRedis !");
+            return Boolean.FALSE;
+        }
+    }
+
+    /**
      * 获取一个Solution,如果出错则返回null
      * @param id
      * @return
@@ -92,6 +128,8 @@ public class RedisService {
             return null;
         }
     }
+
+
 
     /**
      * 从等待队列中移除一个任务，并将其加入待处理队列
