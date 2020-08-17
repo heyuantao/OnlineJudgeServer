@@ -22,6 +22,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author he_yu
@@ -142,7 +143,16 @@ public class OnlineJudgeClientController {
     public ResponseEntity<String> getProblemInformation(
             @Length(min=5,max = 30,message = "参数长度应在5-30之间") @RequestParam(value="pid", required = true) String pid
     ){
-        return null;
+        Map<String,String> resourceLimitMap = onlineJudgeClientService.getResourceLimit(pid);
+        List<String> stringList = new ArrayList<>();
+
+        stringList.add(resourceLimitMap.get("time_limit"));
+        stringList.add(resourceLimitMap.get("mem_limit"));
+        //Debug 确定这个值返回的形式，是true、false还是1、0
+        stringList.add(resourceLimitMap.get("isspj"));
+
+        String content = listStringToMultiLineContent(stringList);
+        return new ResponseEntity(content,HttpStatus.OK);
     }
 
 
