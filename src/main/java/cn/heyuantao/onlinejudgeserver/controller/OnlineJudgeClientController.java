@@ -19,6 +19,7 @@ import javax.swing.*;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -97,29 +98,36 @@ public class OnlineJudgeClientController {
      */
     @PostMapping("/getsolution/")
     public ResponseEntity<String> getSolution(
-            @Validated @Length(min=5,max = 20,message = "参数长度应在5-20之间") @NotEmpty @RequestParam(value="sid") String sid
+            @Length(min=5,max = 30,message = "参数长度应在5-30之间") @NotEmpty @RequestParam(value="sid") String sid
     ){
-        System.out.println(sid);
-/*        if(bindingResult.hasErrors()){
-            System.out.println("Error !!!!!!");
-            System.out.println(bindingResult);
-            //throw new BindingResultException(bindingResult);
-        }*/
-        String solution_content = onlineJudgeClientService.getSolution(sid);
-        return new ResponseEntity(solution_content,HttpStatus.OK);
+        /**
+         * 找到某个Solution对应的程序代码，该代码为用户提交的代码
+         */
+        String solutionSourceCode = onlineJudgeClientService.getSolutionSourceCode(sid);
+        return new ResponseEntity(solutionSourceCode,HttpStatus.OK);
     }
 
 
     /**
      * 获取某个Solution中的其他信息，即问题的编号、用户名和语言的类型编号
      * @param sid
-     * @return problem,username,lang
+     * @return problem_id,username,lang
      */
     @PostMapping("/getsolutioninformation/")
     public ResponseEntity<String> getSolutionInformation(
-            @RequestParam(value="sid") String sid
+            @Length(min=5,max = 30,message = "参数长度应在5-30之间") @NotEmpty @RequestParam(value="sid") String sid
     ){
-        return null;
+        List<String> stringList = new ArrayList<String>();
+
+        /**
+         * 返回Solution的基本信息
+         */
+        stringList.add(sid);
+        stringList.add("client");
+        stringList.add(onlineJudgeClientService.getSolutionLang(sid).toString());
+
+        String content = listStringToMultiLineContent(stringList);
+        return new ResponseEntity(content,HttpStatus.OK);
     }
 
 

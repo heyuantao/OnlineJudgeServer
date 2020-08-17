@@ -147,9 +147,30 @@ public class OnlineJudgeClientService {
         }
     }
 
-    public String getSolution(String sid){
+    /**
+     * 获取对应题目的源代码
+     * @param sid
+     * @return
+     */
+    public String getSolutionSourceCode(String sid){
         Solution solution = redisService.getSolutionById(sid);
+        String sourceCode =  solution.getProblem().getSourceCode();
+        if( (sourceCode==null) || (StringUtils.length(sourceCode)==0)){
+            String errorMessage = String.format("Solution %s source code is empty !",sid);
+            log.error(errorMessage);
+            throw new MessageException(errorMessage);
+        }
+        return sourceCode;
+    }
 
-        return null;
+    /**
+     * 获取对应题目的语言类型
+     * @param sid
+     * @return
+     */
+    public Integer getSolutionLang(String sid){
+        Solution solution = redisService.getSolutionById(sid);
+        Integer langTypeId =  solution.getProblem().getLanguageType().getValue();
+        return langTypeId;
     }
 }

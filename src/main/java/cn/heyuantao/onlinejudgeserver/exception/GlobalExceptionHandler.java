@@ -51,14 +51,14 @@ public class GlobalExceptionHandler {
         /**
          * 可能同时会有多个校验出错的信息，但只显示一个
          */
-        if(constraintViolationSet.size()>1){
+        if(constraintViolationSet.size()>0){
             String defaultMesage = constraintViolationSet.iterator().next().getMessage();
             ErrorDetails errorDetails = new ErrorDetails("数据校验错误",defaultMesage);
             return new ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST);
         }else{
-            String errorMessage = "未找到要校验的信息";
+            String errorMessage = "至少要有一个校验错误，但当前一个也没有找到，软件可能存在问题！";
             log.error(errorMessage);
-            ErrorDetails errorDetails = new ErrorDetails("未知错误",errorMessage);
+            ErrorDetails errorDetails = new ErrorDetails("参数校验异常信息出现错误",errorMessage);
             return new ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST);
         }
     }
