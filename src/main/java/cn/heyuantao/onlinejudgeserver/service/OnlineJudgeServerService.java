@@ -35,6 +35,11 @@ public class OnlineJudgeServerService {
         Result result = new Result();
         solution.setResult(result);
 
+        /**
+         * 从Problem创建一个新的Solution,并将其加入到Redis中
+         */
+        redisService.insertSolutionIntoRedis(solution);
+
         return solution;
     }
 
