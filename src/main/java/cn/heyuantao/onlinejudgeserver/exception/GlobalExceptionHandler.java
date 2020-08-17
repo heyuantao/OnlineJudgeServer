@@ -22,11 +22,9 @@ import java.util.Set;
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
     /**
-     * 全局异常处理，处理未知的错误
-     * @param exception
-     * @param request
-     * @return
+     * 全局异常处理，处理未知的错误。在处理异常的时候同时将堆栈信息打印到日志中
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGlobalException(Exception exception, WebRequest request){
@@ -42,8 +40,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+
     /**
      * 全局异常处理，处理数据校验的错误
+     * 其中该异常的全局处理需要在Controller的类上写上@Validated这个注解
      */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<?> handleBindingResultException(ConstraintViolationException exception, WebRequest request){
@@ -61,20 +61,17 @@ public class GlobalExceptionHandler {
             ErrorDetails errorDetails = new ErrorDetails("未知错误",errorMessage);
             return new ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST);
         }
-
-        /*
-        Set<ConstraintViolation<?>> violations = exs.getConstraintViolations();
-        for (ConstraintViolation<?> item : violations) {
-            System.out.println(item.getMessage());
-            errorMsg.add(item.getMessage());
-        }*/
     }
 
+    /**
+     * 在Controller使用POJO来验证时，会手动抛出验证错误的异常，并由如下函数处理
+     */
     @ExceptionHandler(BindingResultException.class)
     public ResponseEntity<?> handleBindingResultException(BindingResultException exception, WebRequest request){
         ErrorDetails errorDetails = new ErrorDetails(exception.getMessage(),"Request 数据校验错误");
         return new ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST);
     }
+
 
     /**
      * 方法不支持的异常，当对模型接口发送了不被支持的方法时候会触发该异常
