@@ -137,7 +137,8 @@ public class OnlineJudgeClientController {
     /**
      * 获取某个Problem的相应信息
      * @param pid 问题的编号
-     * @return String time_limit,String mem_limit,String isspj,
+     * @return String time_limit,String mem_limit,String isspj
+     * isspj是1和0字符的方式来表示
      */
     @PostMapping("/getprobleminformation/")
     public ResponseEntity<String> getProblemInformation(
@@ -148,7 +149,6 @@ public class OnlineJudgeClientController {
 
         stringList.add(resourceLimitMap.get("time_limit"));
         stringList.add(resourceLimitMap.get("mem_limit"));
-        //Debug 确定这个值返回的形式，是true、false还是1、0
         stringList.add(resourceLimitMap.get("isspj"));
 
         String content = listStringToMultiLineContent(stringList);

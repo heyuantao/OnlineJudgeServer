@@ -242,12 +242,22 @@ public class OnlineJudgeClientService {
      * 以Map的方式返回对应的值 time_limit, mem_limit, isspj
      */
     public Map<String, String> getResourceLimit(String sid) {
-        Map<String,String> returnMap = new HashMap<String,String>();
+        Map<String,String> returnMap = new HashMap<String,String>(3);
         Solution solution = redisService.getSolutionById(sid);
         ProblemResourceLimit problemResourceLimit = solution.getProblem().getProblemResourceLimit();
         returnMap.put("time_limit",problemResourceLimit.getTimeLimit().toString());
         returnMap.put("mem_limit", problemResourceLimit.getMemoryLimit().toString());
-        returnMap.put("isspj", problemResourceLimit.getIsSpecialJudge().toString());
+
+        /**
+         * isSpecialJudge应当以字符串0或1的方式进行显示
+         */
+        Boolean isSpecialJudge = problemResourceLimit.getIsSpecialJudge();
+        if(isSpecialJudge.equals(Boolean.TRUE)){
+            returnMap.put("isspj", "1");
+        }else{
+            returnMap.put("isspj", "0");
+        }
+
         return returnMap;
     }
 }
