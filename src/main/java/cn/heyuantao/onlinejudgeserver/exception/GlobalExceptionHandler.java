@@ -9,8 +9,11 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Set;
 
 /**
  * @author he_yu
@@ -40,8 +43,33 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 全局异常处理，处理接口层面的数据异常的错误,BindResultException是封装了BindResult的一个异常类
+     * 全局异常处理，处理数据校验的错误
      */
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<?> handleBindingResultException(ConstraintViolationException exception, WebRequest request){
+        Set<ConstraintViolation<?>> constraintViolationSet = exception.getConstraintViolations();
+        /**
+         * 可能同时会有多个校验出错的信息，但只显示一个
+         */
+        if(constraintViolationSet.size()>1){
+            String defaultMesage = constraintViolationSet.iterator().next().getMessage();
+            ErrorDetails errorDetails = new ErrorDetails("数据校验错误",defaultMesage);
+            return new ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST);
+        }else{
+            String errorMessage = "未找到要校验的信息";
+            log.error(errorMessage);
+            ErrorDetails errorDetails = new ErrorDetails("未知错误",errorMessage);
+            return new ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST);
+        }
+
+        /*
+        Set<ConstraintViolation<?>> violations = exs.getConstraintViolations();
+        for (ConstraintViolation<?> item : violations) {
+            System.out.println(item.getMessage());
+            errorMsg.add(item.getMessage());
+        }*/
+    }
+
     @ExceptionHandler(BindingResultException.class)
     public ResponseEntity<?> handleBindingResultException(BindingResultException exception, WebRequest request){
         ErrorDetails errorDetails = new ErrorDetails(exception.getMessage(),"Request 数据校验错误");

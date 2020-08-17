@@ -16,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.swing.*;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
@@ -96,7 +97,7 @@ public class OnlineJudgeClientController {
      */
     @PostMapping("/getsolution/")
     public ResponseEntity<String> getSolution(
-            @Length(min=5,max = 20,message = "参数长度应在5-20之间") @NotEmpty @RequestParam(value="sid") String sid
+            @Validated @Length(min=5,max = 20,message = "参数长度应在5-20之间") @NotEmpty @RequestParam(value="sid") String sid
     ){
         System.out.println(sid);
 /*        if(bindingResult.hasErrors()){
