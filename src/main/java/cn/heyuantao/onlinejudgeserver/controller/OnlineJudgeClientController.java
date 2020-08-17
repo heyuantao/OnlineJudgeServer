@@ -83,8 +83,8 @@ public class OnlineJudgeClientController {
      */
     @PostMapping("/addcompileerrorinformation/")
     public ResponseEntity<String> addCompileErrorInformation(
-            @RequestParam(value="sid") String sid,
-            @RequestParam(value="ceinfo") String ceinfo
+            @RequestParam(value="sid", required = true) String sid,
+            @RequestParam(value="ceinfo", required = true) String ceinfo
     ){
         onlineJudgeClientService.addCompileErrorInformation(sid,ceinfo);
         return new ResponseEntity("",HttpStatus.ACCEPTED);
@@ -98,7 +98,7 @@ public class OnlineJudgeClientController {
      */
     @PostMapping("/getsolution/")
     public ResponseEntity<String> getSolution(
-            @Length(min=5,max = 30,message = "参数长度应在5-30之间") @NotEmpty @RequestParam(value="sid") String sid
+            @Length(min=5,max = 30,message = "参数长度应在5-30之间") @RequestParam(value="sid", required = true) String sid
     ){
         /**
          * 找到某个Solution对应的程序代码，该代码为用户提交的代码
@@ -115,12 +115,13 @@ public class OnlineJudgeClientController {
      */
     @PostMapping("/getsolutioninformation/")
     public ResponseEntity<String> getSolutionInformation(
-            @Length(min=5,max = 30,message = "参数长度应在5-30之间") @NotEmpty @RequestParam(value="sid") String sid
+            @Length(min=5,max = 30,message = "参数长度应在5-30之间") @RequestParam(value="sid", required = true) String sid
     ){
         List<String> stringList = new ArrayList<String>();
 
         /**
-         * 返回Solution的基本信息
+         * 返回Solution的基本信息，包含solution对应的problem_id,username和lang
+         * 在实际使用中problem_id和solution_id相同，username可以为空，语言类型需要确保和判题机中定义的语言类型一致
          */
         stringList.add(sid);
         stringList.add("client");
@@ -138,7 +139,7 @@ public class OnlineJudgeClientController {
      */
     @PostMapping("/getprobleminformation/")
     public ResponseEntity<String> getProblemInformation(
-            @RequestParam(value="pid") String pid
+            @Length(min=5,max = 30,message = "参数长度应在5-30之间") @RequestParam(value="pid", required = true) String pid
     ){
         return null;
     }
@@ -152,8 +153,8 @@ public class OnlineJudgeClientController {
      */
     @PostMapping("/addruningerrorinformation/")
     public ResponseEntity<String> addRuningErrorInformation(
-            @RequestParam(value = "sid") String sid,
-            @RequestParam(value = "reinfo") String reinfo
+            @Length(min=5,max = 30,message = "参数长度应在5-30之间")  @RequestParam(value = "sid", required = true) String sid,
+            @RequestParam(value = "reinfo",required = true) String reinfo
     ){
         return null;
     }
@@ -172,7 +173,7 @@ public class OnlineJudgeClientController {
      */
     @PostMapping("/gettestdatalist/")
     public ResponseEntity<String> getTestDataList(
-            @Validated @RequestParam(value = "pid") String pid
+            @Length(min=5,max = 30,message = "参数长度应在5-30之间")  @RequestParam(value = "pid",required = true) String pid
     ){
         List<String> testDataList = onlineJudgeClientService.getTestDataList(pid);
         String content = listStringToMultiLineContent(testDataList);
@@ -193,7 +194,7 @@ public class OnlineJudgeClientController {
      */
     @PostMapping("/gettestdatadata/")
     public ResponseEntity<String> getTestDataData(
-            @RequestParam(value = "filename") String filenameWithPath
+            @RequestParam(value = "filename", required = true) String filenameWithPath
     ){
         String[] strArray = StringUtils.split(filenameWithPath,"/");
         if(strArray.length!=2){
@@ -217,7 +218,7 @@ public class OnlineJudgeClientController {
      */
     @PostMapping("/gettestdatadate/")
     public ResponseEntity<String> getTestDataDate(
-            @RequestParam(value = "filename") String filename
+            @RequestParam(value = "filename", required = true) String filename
     ){
         String errorMessage = String.format("This api %s should not be called !","/gettestdatadate/");
         log.error(errorMessage);
@@ -230,7 +231,7 @@ public class OnlineJudgeClientController {
      */
     @PostMapping("/updateprobleminformation/")
     public ResponseEntity<String> updateProblemInformation(
-            @RequestParam(value = "pid") String pid
+            @Length(min=5,max = 30,message = "参数长度应在5-30之间") @RequestParam(value = "pid", required = true) String pid
     ){
         String errorMessage = String.format("This api %s should not be called !","/updateprobleminformation/");
         log.error(errorMessage);
@@ -244,7 +245,7 @@ public class OnlineJudgeClientController {
      */
     @PostMapping("/updateuserinformation/")
     public ResponseEntity<String> updateUserInformation(
-            @RequestParam(value = "user_id") String user_id
+            @Length(min=5,max = 30,message = "参数长度应在5-30之间") @RequestParam(value = "user_id", required = true) String user_id
     ){
         String errorMessage = String.format("This api %s should not be called !","/updateuserinformation/");
         log.error(errorMessage);
