@@ -148,12 +148,10 @@ public class RedisService {
                  * 时间戳，这个值被一块加入用于排序
                  */
                 Double timeStampInDoubleFormat = getTimeStampInDoubleFormat();
-
                 operations.multi();
                 String solutionId = (String) operations.opsForList().leftPop(pendingQueueName);
                 operations.opsForZSet().add(processingQueueName, solutionId, timeStampInDoubleFormat);
                 operations.exec();
-
                 return solutionId;
             }
         };
