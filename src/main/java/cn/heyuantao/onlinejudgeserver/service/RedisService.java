@@ -229,6 +229,31 @@ public class RedisService {
         }
     }
 
+    /**
+     * 检查一个ID是否在PROCESSING队列中
+     * 由于在processingQueue中，每个id都有一个分数，如果某个id的分数为空则说明其不存在
+     */
+    public Boolean isInProcessingQueue(String id){
+        Double score = redisTemplate.opsForZSet().score(processingQueueName,id);
+        if(score == null){
+            return Boolean.FALSE;
+        }else{
+            return Boolean.TRUE;
+        }
+    }
+
+    /**
+     * 检查一个ID是否在FINISHED队列中
+     * 由于在finishedQueue中，每个id都有一个分数，如果某个id的分数为空则说明其不存在
+     */
+    public Boolean isInFinishedQueue(String id){
+        Double score = redisTemplate.opsForZSet().score(finishedQueueName,id);
+        if(score == null){
+            return Boolean.FALSE;
+        }else{
+            return Boolean.TRUE;
+        }
+    }
 
     /**
      * 检查Processing队列的任务，看看是否有些任务属于太长时间没有完成的，这些任务可能是判题机出错导致的情况

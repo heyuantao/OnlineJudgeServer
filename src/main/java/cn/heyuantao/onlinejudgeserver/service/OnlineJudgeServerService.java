@@ -1,9 +1,6 @@
 package cn.heyuantao.onlinejudgeserver.service;
 
-import cn.heyuantao.onlinejudgeserver.core.UUIDGenerator;
-import cn.heyuantao.onlinejudgeserver.core.Problem;
-import cn.heyuantao.onlinejudgeserver.core.Result;
-import cn.heyuantao.onlinejudgeserver.core.Solution;
+import cn.heyuantao.onlinejudgeserver.core.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -96,5 +93,38 @@ public class OnlineJudgeServerService {
         log.error(errorMessage);
 
         return Boolean.FALSE;
+    }
+
+    /**
+     * 获取一个任务的判题状态,该任务可能不存在
+     * @param id
+     * @return
+     */
+    public Result getProblemJudgeResultById(String id) {
+        Solution solution = redisService.getSolutionById(id);
+        Result result = solution.getResult();
+        return result;
+    }
+
+    /**
+     * 返回一个任务对应的状态,状态为一下几种
+     * PENDING(等待)、PROCESSING(处理中)、FINISHED(结束)
+     * @param id
+     * @return
+     */
+    public String getProblemJudgeSummaryById(String id){
+        Solution solution = redisService.getSolutionById(id);
+        Result result = solution.getResult();
+        JudgeStatus judgeStatus = result.getJudgeStatus();
+        String finalStatusDescribe = "";
+
+        if(judgeStatus.isInPendingStatus()){
+            finalStatusDescribe="PENDING";
+        }else if(redisService.isInProcessingQueue(id)){
+            finalStatusDescribe="PROCESSING";
+        }else if(redisService.isInFinishedQueue(id)){
+            finalStatusDescribe="FINISHED";
+        }
+        return finalStatusDescribe;
     }
 }

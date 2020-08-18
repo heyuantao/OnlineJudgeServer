@@ -135,4 +135,20 @@ class RedisServiceTest {
         System.out.println(solution);*/
 
     }
+
+    @Test
+    void isInProcessingQueue() {
+        String idExist = "testtesttesttest";
+        String idNotExist = idExist+"abc";
+        Double score = redisService.getTimeStampInDoubleFormat();
+
+        Double scoreInRedis = null;
+
+        redisTemplate.opsForZSet().add(processingQueueName,idExist,score);
+        scoreInRedis = redisTemplate.opsForZSet().score(processingQueueName,idExist);
+        System.out.println(scoreInRedis);
+
+        scoreInRedis = redisTemplate.opsForZSet().score(processingQueueName,idNotExist);
+        System.out.println(scoreInRedis);
+    }
 }
