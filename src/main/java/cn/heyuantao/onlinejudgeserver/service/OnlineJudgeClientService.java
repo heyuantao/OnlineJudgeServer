@@ -68,7 +68,6 @@ public class OnlineJudgeClientService {
         Solution solution = redisService.getSolutionById(sid);
 
         Result changedResult = solution.getResult();
-
         JudgeStatus judgeStatus = JudgeStatus.getJudgeStatusByValue(Integer.parseInt(result));
         changedResult.setJudgeStatus(judgeStatus);
         changedResult.setTime(time);
@@ -84,7 +83,10 @@ public class OnlineJudgeClientService {
         /**
          * 检查这个任务是否在结束状态，如果在结束状态则通知第三方客户端，同时删除这个任务的信息
          */
-        checkTheFinalStatusAndNotify(solution);
+        //JudgeStatus judgeStatus = solution.getResult().getJudgeStatus();
+        if(JudgeStatus.isInFinalStatus(judgeStatus)) {
+            checkTheFinalStatusAndNotify(solution);
+        }
     }
 
     /**
@@ -93,19 +95,11 @@ public class OnlineJudgeClientService {
      */
     @Async
     public void checkTheFinalStatusAndNotify(Solution solution) {
-        JudgeStatus judgeStatus = solution.getResult().getJudgeStatus();
-        if(JudgeStatus.isInFinalStatus(judgeStatus)){
-            /**
-             * 通知第三方客户端,该判题已经结束
-             */
-            onlineJudgeServerService.notifyClientBySolution(solution);
+        //通知第三方客户端,该判题已经结束,使用预定于的URL去通知第三方客户端，该操作可能会耗费时间
+        onlineJudgeServerService.notifyClientBySolution(solution);
 
-            /**
-             * 删除对应的记录信息，将其从待处理队列和相应的题目信息数据删除
-             * deleteSolutionInformationAndIdInProcessingQueue()
-             */
-            redisService.deleteSolutionInformationAndRecordInProcessingQueue(solution.getId());
-        }
+        //删除对应的记录信息，将其从待处理队列和相应的题目信息数据删除，deleteSolutionInformationAndIdInProcessingQueue()
+        redisService.deleteSolutionInformationAndRecordInProcessingQueue(solution.getId());
     }
 
     /**
