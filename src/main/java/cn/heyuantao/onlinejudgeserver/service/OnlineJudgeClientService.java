@@ -85,16 +85,17 @@ public class OnlineJudgeClientService {
          */
         //JudgeStatus judgeStatus = solution.getResult().getJudgeStatus();
         if(JudgeStatus.isInFinalStatus(judgeStatus)) {
-            checkTheFinalStatusAndNotify(solution);
+            clearTheProcessingStatusAndNotifyTheClient(solution);
         }
     }
 
     /**
      * 该任务是个异步任务，可能要耗费很长时间
+     * 同时第三方客户端，同时删除相关的信息
      * @param solution
      */
     @Async
-    public void checkTheFinalStatusAndNotify(Solution solution) {
+    public void clearTheProcessingStatusAndNotifyTheClient(Solution solution) {
         //通知第三方客户端,该判题已经结束,使用预定于的URL去通知第三方客户端，该操作可能会耗费时间
         onlineJudgeServerService.notifyClientBySolution(solution);
 
