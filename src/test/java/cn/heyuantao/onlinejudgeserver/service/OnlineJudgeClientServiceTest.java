@@ -29,7 +29,7 @@ class OnlineJudgeClientServiceTest {
 
     @BeforeEach
     public void prepare(){
-        String solutionId = "32423423";
+        String solutionId = "XXX1778a996a425ba1d41096a0215XXX";
 
         System.out.println("prepare data");
         Solution solution = new Solution();
@@ -57,7 +57,7 @@ class OnlineJudgeClientServiceTest {
 
     @Test
     public void getTestFileByName() {
-        String solutionId = "32423423";
+        String solutionId = "XXX1778a996a425ba1d41096a0215XXX";
         String testFilename = "test1.in";
 
         /**
@@ -99,5 +99,20 @@ class OnlineJudgeClientServiceTest {
             log.error(errorMessage);
             throw new MessageException(errorMessage);
         }
+    }
+
+    @Test
+    void testForInitContainerSize() {
+        List<String> stringList = null;
+        stringList = new ArrayList<String>();
+        for(Integer i=0;i<20;i++){
+            stringList.add(i.toString());
+        }
+        System.out.println(stringList.size());
+        stringList = new ArrayList<String>(10);
+        for(Integer i=0;i<20;i++){
+            stringList.add(i.toString());
+        }
+        System.out.println(stringList.size());
     }
 }

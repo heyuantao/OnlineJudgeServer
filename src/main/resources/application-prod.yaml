@@ -1,13 +1,25 @@
 debug: false
 
 spring:
-  thymeleaf:
-    encoding: UTF-8
-    cache: false
-    mode: HTML
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    password:
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0
+    timeout: 300
+  #  thymeleaf:
+  #    encoding: UTF-8
+  #    cache: false
+  #    mode: HTML
   jackson:
     default-property-inclusion: non_empty
 
 logging:
   level:
-    root: info
+    root: error

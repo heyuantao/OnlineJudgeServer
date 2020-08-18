@@ -17,7 +17,8 @@ import java.io.Serializable;
 public class Result implements Serializable {
 
     /**
-     * JudgeStatus(判题状态)，time(判题耗费时间)、memory(判题耗费的内存)
+     * JudgeStatus(判题状态),该部分对应判题机提交的状态，且一一对应
+     * time(判题耗费时间)、memory(判题耗费的内存)
      * sim(不清楚)、simID(不清楚)
      * passRate(判题正确率)
      * compileErrorInformation(编译错误的提示信息)

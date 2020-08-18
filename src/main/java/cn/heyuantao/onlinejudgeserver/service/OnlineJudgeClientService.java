@@ -14,7 +14,7 @@ import java.util.Map;
 
 /**
  * @author he_yu
- * 将用户的数据存储在Redis中
+ * 该服务与判题机进行对接，判题机通过该接口主动得获取任务并将结果通过接口进行提交
  */
 @Slf4j
 @Service
@@ -36,7 +36,7 @@ public class OnlineJudgeClientService {
         Integer retryCount = 0;
         for(;;) {
             /**
-             * 先获取一个任务
+             * 先获取一个任务，如果没有任务或者获取任务出错，则返回null
              */
             String id = redisService.pickOneSolutionAndPutIntoProcessingQueue();
             if (id != null) {

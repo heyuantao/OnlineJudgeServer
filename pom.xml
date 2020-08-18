@@ -8,6 +8,7 @@
         <version>2.3.2.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+
     <groupId>cn.heyuantao</groupId>
     <artifactId>onlinejudgeserver</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -125,6 +126,10 @@
     </dependencies>
 
     <build>
+        <!--打包后的文件名-->
+        <finalName>
+            OnlineJudgeServer
+        </finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

@@ -1,5 +1,6 @@
 package cn.heyuantao.onlinejudgeserver.core;
 
+import cn.heyuantao.onlinejudgeserver.exception.InvalidValueException;
 import cn.heyuantao.onlinejudgeserver.exception.MessageException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.EnumUtils;
@@ -10,7 +11,8 @@ import java.util.List;
 
 /**
  * @author he_yu
- * 判题状态
+ * 判题状态，与判题机的状态意义对应。为了方便处理多加了一个PD（等待）状态
+ *
  * 新添加的题目进入等待状态，判题时状态为判题中
  */
 
@@ -73,7 +75,7 @@ public enum JudgeStatus {
      * 最后结果是否正确
      * @return
      */
-    public Boolean isSuccessStatus(){
+    public Boolean isInSuccessStatus(){
         if(this==JudgeStatus.AC){
             return Boolean.TRUE;
         }else{
@@ -94,6 +96,21 @@ public enum JudgeStatus {
 
         String errorMessage = String.format("Can not find JudgeStatus with value %d",value);
         log.error(errorMessage);
-        throw new MessageException(errorMessage);
+        throw new InvalidValueException(errorMessage);
+    }
+
+    /**
+     * 判断是否是最终状态，最终状态指的是不再会发生状态改变的状态
+     * 最终状态有以下几种
+     */
+    public static Boolean isInFinalStatus(JudgeStatus judgeStatus){
+        Integer finalStatusValue = judgeStatus.getValue();
+        if((finalStatusValue>=JudgeStatus.AC.value)&&(finalStatusValue<=JudgeStatus.TR.value)){
+            return Boolean.TRUE;
+        }else if((finalStatusValue>=JudgeStatus.PD.value)&&(finalStatusValue<=JudgeStatus.RI.value)){
+            return Boolean.FALSE;
+        }else{
+            throw new InvalidValueException(judgeStatus.toString());
+        }
     }
 }
