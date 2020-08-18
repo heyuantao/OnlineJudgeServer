@@ -17,15 +17,4 @@ class OnlineJudgeClientControllerTest {
     @Autowired
     private RedisTemplate<String,Object> redisTemplate;
 
-    @Test
-    void redisObjectTest() {
-        SysUser sysUser = new SysUser();
-        sysUser.setName("abc");
-        sysUser.setPassword("hello");
-        System.out.println(sysUser);
-        redisTemplate.opsForValue().set("one",sysUser);
-
-        SysUser otherUser = (SysUser) redisTemplate.opsForValue().get("one");
-        System.out.println(otherUser);
-    }
 }
