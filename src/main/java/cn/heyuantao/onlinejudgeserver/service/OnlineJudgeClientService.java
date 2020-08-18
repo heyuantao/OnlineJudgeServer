@@ -5,6 +5,7 @@ import cn.heyuantao.onlinejudgeserver.exception.MessageException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -86,14 +87,18 @@ public class OnlineJudgeClientService {
         checkTheFinalStatusAndNotify(solution);
     }
 
-    private void checkTheFinalStatusAndNotify(Solution solution) {
+    /**
+     * 该任务是个异步任务，可能要耗费很长时间
+     * @param solution
+     */
+    @Async
+    public void checkTheFinalStatusAndNotify(Solution solution) {
         JudgeStatus judgeStatus = solution.getResult().getJudgeStatus();
         if(JudgeStatus.isInFinalStatus(judgeStatus)){
             /**
-             * 通知第三方客户端,该判题已经结束，该任务为异步任务
+             * 通知第三方客户端,该判题已经结束
              */
             onlineJudgeServerService.notifyClientBySolution(solution);
-
 
             /**
              * 删除对应的记录信息，将其从待处理队列和相应的题目信息数据删除
