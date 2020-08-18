@@ -99,8 +99,8 @@ public class OnlineJudgeClientService {
         //通知第三方客户端,该判题已经结束,使用预定于的URL去通知第三方客户端，该操作可能会耗费时间
         onlineJudgeServerService.notifyClientBySolution(solution);
 
-        //删除对应的记录信息，将其从待处理队列和相应的题目信息数据删除，deleteSolutionInformationAndIdInProcessingQueue()
-        redisService.deleteSolutionInformationAndRecordInProcessingQueue(solution.getId());
+        //将Solution的ID从处理队列移动到完成队列，moveToFinishedQueue()
+        redisService.moveSolutionToFinishedQueue(solution.getId());
     }
 
     /**

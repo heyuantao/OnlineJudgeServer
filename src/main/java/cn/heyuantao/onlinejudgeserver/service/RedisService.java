@@ -33,10 +33,13 @@ public class RedisService {
      * 在Redis要存储三种类型的信息
      * 1、Solution本身，用SOLUTION作为前缀
      * 2、PENDING队列，存储待待处理的SOLUTION, 该队列的类型为LIST
-     * 3、PROCESSING队列，存储正在处理的SOLUTION，该队列的类型为有序集合
+     * 3、PROCESSING队列，存储正在处理的SOLUTION，该队列的类型为有序集合。该队列仅仅保存五分钟之内的信息。
+     * 4、FINISHED队列，存储已经结束判题过程的SOLUTION，该队列的类型为有序集合。该队列仅仅保存五分种内的信息。
      */
     private String pendingQueueName       = "PENDING";
     private String processingQueueName    = "PROCESSING";
+    private String finishedQueueName      = "FINISHED";
+
     private String solutionPrefix         = "SOLUTION::";
 
     /**
@@ -188,14 +191,53 @@ public class RedisService {
         return toEpochSecond.doubleValue();
     }
 
+
+    /**
+     * 将Solution.id 对应的信息从待处理队列移动到判题完成队列
+     * @param oneSolutionId
+     */
+    public Boolean moveSolutionToFinishedQueue(String oneSolutionId) {
+        /**
+         * 创建一个事务，保存所有命令一次执行完成
+         */
+        SessionCallback<Solution> callback = new SessionCallback() {
+            /**
+             * 将Solution对应的ID从PROCESSING队列移动到FINISHED队列，在插入到FINISHED队列的时候，将当前的时间信息随着ID一同存放。
+             */
+            @Override
+            public Object execute(RedisOperations operations) throws DataAccessException {
+                Double timeStampInDoubleFormat = getTimeStampInDoubleFormat();
+
+                operations.multi();
+                operations.opsForZSet().remove(processingQueueName,oneSolutionId);
+                operations.opsForZSet().add(finishedQueueName, oneSolutionId, timeStampInDoubleFormat);
+                return operations.exec();
+            }
+        };
+
+
+        try{
+            /**
+             * 返回值为ArrayList<Object>,其中每个Object代表了命令的执行情况
+             */
+            List<Object> objectList = (List<Object>) redisTemplate.execute(callback);
+            return Boolean.TRUE;
+        }catch (Exception ex){
+            String errorMessage = String.format("Error in move \'%s\' from processing queue to finished queue at moveSolutionToFinishedQueue()！",oneSolutionId);
+            log.error(errorMessage);
+            return Boolean.FALSE;
+        }
+    }
+
+
     /**
      * 检查Processing队列的任务，看看是否有些任务属于太长时间没有完成的，这些任务可能是判题机出错导致的情况
      * 每隔二十秒执行一次,并清除超时5分钟以前的Solution
      * 一个题目在提交后会保存为一个Solution，如果超过五分钟该题目仍然没有被解决可能对应的判题机出错
      */
     @Scheduled(fixedRate = 20000)
-    public void clearExpiredSolution(){
-        log.info("Clear the expire solution !");
+    public void clearExpiredSolutionInProcessingQueue(){
+        log.info("Clear the expire solution in the processing queue !");
         LocalDateTime localDateTime = LocalDateTime.now().minus(5, ChronoUnit.MINUTES);
         Long endDateTimeInLongFormat = localDateTime.toEpochSecond(ZoneOffset.of("+8"));
         Double begin = new Double(0);
@@ -233,37 +275,45 @@ public class RedisService {
     }
 
     /**
-     * 将Solution.id 对应的信息从待处理队列中删除，同时删除Solution本身的信息
-     * @param oneSolutionId
+     * 检查FINISHED队列的任务，清除10分钟以前进入队列的任务，该队列的任务是已经判题结束的任务，这些Solution会在系统中留存一段时间用于客户端的主动查询
+     * 每隔三十秒执行一次,并清除超时10分钟以前的Solution
      */
-    public Boolean deleteSolutionInformationAndRecordInProcessingQueue(String oneSolutionId) {
+    @Scheduled(fixedRate = 30*1000)
+    public void clearCachedSolutionIdInFinishedQueue(){
+        log.info("Clear the cached solution in the finished queue !");
+        LocalDateTime localDateTime = LocalDateTime.now().minus(10, ChronoUnit.MINUTES);
+        Long endDateTimeInLongFormat = localDateTime.toEpochSecond(ZoneOffset.of("+8"));
+        Double begin = new Double(0);
+        Double end = endDateTimeInLongFormat.doubleValue();
         /**
-         * 创建一个事务，保存所有命令一次执行完成
+         * 获取10分钟以前的所有任务编号
          */
-        SessionCallback<Solution> callback = new SessionCallback() {
+        Set<String> expiredSolutionIdSet = redisTemplate.opsForZSet().rangeByScore(processingQueueName, begin, end);
+
+        if(expiredSolutionIdSet.size()>0){
+            log.info("Clear "+expiredSolutionIdSet+" cached solution before sometime !");
+        }else{
+            log.info("No cached solution should be clear !");
+        }
+
+        /**
+         * 准备清除对应的题目信息
+         */
+        for(String oneSolutionId:expiredSolutionIdSet){
             /**
-             * 删除Solution本身，同时也删除在处理队列中的信息
+             * 先清除待完成队列的内容
              */
-            @Override
-            public Object execute(RedisOperations operations) throws DataAccessException {
-                String key = solutionPrefix+oneSolutionId;
-                operations.multi();
-                operations.delete(key);
-                operations.opsForZSet().remove(processingQueueName,oneSolutionId);
-                return operations.exec();
+            redisTemplate.opsForZSet().remove(finishedQueueName, oneSolutionId);
+
+            /**
+             * 再清除题目的相关信息
+             */
+            String key = solutionPrefix+oneSolutionId;
+            if(redisTemplate.hasKey(key)) {
+                redisTemplate.delete(key);
             }
-        };
-
-
-        try{
-            /**
-             * 返回值为ArrayList<Object>,其中每个Object代表了命令的执行情况
-             */
-            List<Object> objectList = (List<Object>) redisTemplate.execute(callback);
-            return Boolean.TRUE;
-        }catch (Exception ex){
-            log.error("Error in deleteSolutionInformationAndRecordInProcessingQueue !");
-            return Boolean.FALSE;
         }
     }
+
+
 }
