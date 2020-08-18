@@ -67,7 +67,8 @@ public class OnlineJudgeServerService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         //以JSON的方式接受数据
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        HttpEntity<Solution> entity = new HttpEntity<>(solution,headers);
+
+        HttpEntity<Result> entity = new HttpEntity<>(judgeResult,headers);
 
         //进行三次重试
         for(retryCount =1; retryCount<=maxRetryCount; ){
@@ -85,7 +86,7 @@ public class OnlineJudgeServerService {
                 return Boolean.TRUE;
             } else {
                 retryCount = retryCount +1;
-                String errorMessage = String.format("Notify the third part client failure. Retry it to post \'%s\' !",notifyUrl);
+                String errorMessage = String.format("Notify the third part client failure. Retry it to post url \'%s\' !",notifyUrl);
                 log.error(errorMessage);
             }
         }
