@@ -5,6 +5,8 @@ import cn.heyuantao.onlinejudgeserver.core.Result;
 import cn.heyuantao.onlinejudgeserver.core.Solution;
 import cn.heyuantao.onlinejudgeserver.core.UUIDGenerator;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,17 @@ class RedisServiceTest {
     private String pendingQueueName       = "PENDING";
     private String processingQueueName    = "PROCESSING";
     private String solutionPrefix         = "SOLUTION::";
+
+    @BeforeEach
+    public void prepare(){
+        Solution solution = new Solution();
+        solution.setId("YYY5964e40a344c4bf12435918dc755f");
+        solution.setProblem(new Problem());
+        solution.setResult(new Result());
+        System.out.println(solution);
+        Boolean status = redisService.insertSolutionIntoRedis(solution);
+        System.out.println("Prepare data finished !");
+    }
 
     @Test
     void insertSolutionIntoRedis() {
@@ -108,5 +121,16 @@ class RedisServiceTest {
         }else{
             System.out.println("No expire solution");
         }
+    }
+
+    @Test
+    public void getSolutionTest(){
+        Solution solution = null;
+        solution = redisService.getSolutionById("YYY5964e40a344c4bf12435918dc755f");
+        System.out.println(solution);
+        solution = redisService.getSolutionById("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN");
+        Assert.assertEquals(solution,null);
+        System.out.println(solution);
+
     }
 }

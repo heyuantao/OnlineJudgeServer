@@ -42,6 +42,25 @@ public class GlobalExceptionHandler {
 
 
     /**
+     * 程序中的出错信息提示
+     */
+    @ExceptionHandler(MessageException.class)
+    public ResponseEntity<?> handleMessageException(MessageException exception, WebRequest request){
+        ErrorDetails errorDetails = new ErrorDetails(exception.getMessage(),"数据校验错误");
+        return new ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * 对非法数值的异常处理
+     */
+    @ExceptionHandler(InvalidValueException.class)
+    public ResponseEntity<?> handleInvalidValueException(InvalidValueException exception, WebRequest request){
+        ErrorDetails errorDetails = new ErrorDetails(exception.getMessage(),"数据校验错误");
+        return new ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+
+    /**
      * 全局异常处理，处理数据校验的错误
      * 其中该异常的全局处理需要在Controller的类上写上@Validated这个注解
      */

@@ -1,6 +1,8 @@
 package cn.heyuantao.onlinejudgeserver.service;
 
 import cn.heyuantao.onlinejudgeserver.core.Solution;
+import cn.heyuantao.onlinejudgeserver.exception.InvalidValueException;
+import cn.heyuantao.onlinejudgeserver.exception.MessageException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -121,14 +123,22 @@ public class RedisService {
         Solution solution = null;
         try{
             solution = (Solution) redisTemplate.opsForValue().get(key);
-            return solution;
         }catch (Exception ex){
-            String errorMessage = String.format("getSolutionById error on %s",id);
+            /**
+             * 发生了未知的错误，很可能是Redis连接失败
+             */
+            String errorMessage = String.format("当执行getSolutionById()发生了未知的错误,请检查Redis的连接信息.未知错误信息为:%s",ex.getMessage());
             log.error(errorMessage);
-            return null;
+            throw new MessageException(errorMessage);
         }
-    }
 
+        if(solution==null){
+            String errorMessage = String.format("编号为 \'%s\' 的Solution不存在",id);
+            log.error(errorMessage);
+            throw new InvalidValueException(errorMessage);
+        }
+        return solution;
+    }
 
 
     /**
