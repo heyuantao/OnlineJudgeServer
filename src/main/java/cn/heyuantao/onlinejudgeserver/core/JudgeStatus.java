@@ -102,6 +102,7 @@ public enum JudgeStatus {
     /**
      * 判断是否是最终状态，最终状态指的是不再会发生状态改变的状态
      * 最终状态有以下几种
+     * 其中在CE(编译错误)和RE(运行错误)状态时还会在Result中携带相应的编译错误和运行错误的提示信息
      */
     public static Boolean isInFinalStatus(JudgeStatus judgeStatus){
         Integer finalStatusValue = judgeStatus.getValue();

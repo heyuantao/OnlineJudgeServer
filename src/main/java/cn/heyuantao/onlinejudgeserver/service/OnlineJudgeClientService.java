@@ -23,6 +23,9 @@ public class OnlineJudgeClientService {
     @Autowired
     RedisService redisService;
 
+    @Autowired
+    OnlineJudgeServerService onlineJudgeServerService;
+
 
     /**
      * 从等待队列中找到几个待处理的任务
@@ -76,6 +79,28 @@ public class OnlineJudgeClientService {
         solution.setResult(changedResult);
 
         redisService.updateSolutionAtRedis(solution);
+
+        /**
+         * 检查这个任务是否在结束状态，如果在结束状态则通知第三方客户端，同时删除这个任务的信息
+         */
+        checkTheFinalStatusAndNotify(solution);
+    }
+
+    private void checkTheFinalStatusAndNotify(Solution solution) {
+        JudgeStatus judgeStatus = solution.getResult().getJudgeStatus();
+        if(JudgeStatus.isInFinalStatus(judgeStatus)){
+            /**
+             * 通知第三方客户端,该判题已经结束，该任务为异步任务
+             */
+            onlineJudgeServerService.notifyClientBySolution(solution);
+
+
+            /**
+             * 删除对应的记录信息，将其从待处理队列和相应的题目信息数据删除
+             * deleteSolutionInformationAndIdInProcessingQueue()
+             */
+            redisService.deleteSolutionInformationAndRecordInProcessingQueue(solution.getId());
+        }
     }
 
     /**

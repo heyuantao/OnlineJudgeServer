@@ -43,5 +43,16 @@ public class OnlineJudgeServerService {
         return solution;
     }
 
+    /**
+     * 应当为异步任务
+     * @param solution
+     */
+    public Boolean notifyClientBySolution(Solution solution) {
+        String notifyUrl = solution.getProblem().getNotifyAddress();
+        /**
+         * 用异步的方式通知第三方客户端
+         */
 
+        return Boolean.TRUE;
+    }
 }

@@ -231,4 +231,37 @@ public class RedisService {
             }
         }
     }
+
+    /**
+     * 将Solution.id 对应的信息从待处理队列中删除，同时删除Solution本身的信息
+     * @param oneSolutionId
+     */
+    public Boolean deleteSolutionInformationAndRecordInProcessingQueue(String oneSolutionId) {
+        /**
+         * 创建一个事务，保存所有命令一次执行完成
+         */
+        SessionCallback<Solution> callback = new SessionCallback() {
+
+            @Override
+            public Object execute(RedisOperations operations) throws DataAccessException {
+                String key = solutionPrefix+oneSolutionId;
+                operations.multi();
+                operations.delete(key);
+                operations.opsForZSet().remove(processingQueueName,oneSolutionId);
+                return operations.exec();
+            }
+        };
+
+
+        try{
+            /**
+             * 返回值为ArrayList<Object>,其中每个Object代表了命令的执行情况
+             */
+            List<Object> objectList = (List<Object>) redisTemplate.execute(callback);
+            return Boolean.TRUE;
+        }catch (Exception ex){
+            log.error("Error in deleteSolutionInformationAndRecordInProcessingQueue !");
+            return Boolean.FALSE;
+        }
+    }
 }
