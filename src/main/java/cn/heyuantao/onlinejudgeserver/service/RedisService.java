@@ -241,7 +241,9 @@ public class RedisService {
          * 创建一个事务，保存所有命令一次执行完成
          */
         SessionCallback<Solution> callback = new SessionCallback() {
-
+            /**
+             * 删除Solution本身，同时也删除在处理队列中的信息
+             */
             @Override
             public Object execute(RedisOperations operations) throws DataAccessException {
                 String key = solutionPrefix+oneSolutionId;

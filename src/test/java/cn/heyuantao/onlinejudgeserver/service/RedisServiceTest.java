@@ -68,7 +68,7 @@ class RedisServiceTest {
         System.out.println(timeStamp);
     }
 
-
+    @Test
     void timeStampRangeFormat() throws InterruptedException {
         Double value = null;
         Double old = null;
@@ -85,8 +85,10 @@ class RedisServiceTest {
         old = value;
         redisTemplate.opsForZSet().add("test",4,value);
         Set<Double> doubleSet = redisTemplate.opsForZSet().rangeByScore("test",old ,value);
-
         System.out.println(doubleSet);
+
+        System.out.println("Test the \'test\' key");
+        redisTemplate.delete("test");
 
     }
 
