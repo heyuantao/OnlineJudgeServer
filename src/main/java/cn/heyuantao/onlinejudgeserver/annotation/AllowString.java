@@ -1,4 +1,4 @@
-package cn.heyuantao.onlinejudgeserver.validator;
+package cn.heyuantao.onlinejudgeserver.annotation;
 
 import org.springframework.core.annotation.AliasFor;
 

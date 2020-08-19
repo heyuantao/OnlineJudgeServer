@@ -344,8 +344,9 @@ public class RedisService {
      * 获取等待队列任务得数量
      * @return
      */
+
     public Long getPendingQueueLength() {
-        Long count = redisTemplate.opsForList().size(processingQueueName);
+        Long count = redisTemplate.opsForList().size(pendingQueueName);
         return count;
     }
 }

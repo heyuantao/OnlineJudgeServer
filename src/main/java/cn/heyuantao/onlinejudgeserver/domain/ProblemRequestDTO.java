@@ -1,9 +1,8 @@
 package cn.heyuantao.onlinejudgeserver.domain;
 
 
-import cn.heyuantao.onlinejudgeserver.core.Problem;
 import cn.heyuantao.onlinejudgeserver.core.ProblemTestCase;
-import cn.heyuantao.onlinejudgeserver.validator.AllowString;
+import cn.heyuantao.onlinejudgeserver.annotation.AllowString;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

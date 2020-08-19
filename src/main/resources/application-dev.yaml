@@ -32,4 +32,4 @@ custom:
       - "abc123"
       - "efg456"
   queue:
-    pending-max-size: 100
+    pending-queue-size: 15

@@ -47,7 +47,7 @@ public class OnlineJudgeServerController {
         Problem problem = convertToProblem(problemRequestDTO);
 
         Long currentPendingSolutionCount = onlineJudgeServerService.getSolutionCount();
-        if(currentPendingSolutionCount > queueConfig.getPendingMaxCount()){
+        if(currentPendingSolutionCount > queueConfig.getPendingQueueSize()){
             throw new MessageException("Too much solution is in pending status !");
         }
 

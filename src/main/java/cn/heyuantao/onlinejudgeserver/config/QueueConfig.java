@@ -13,13 +13,13 @@ public class QueueConfig {
     /**
      * 等待队队列得长度
      */
-    private Integer pendingMaxCount;
+    private Integer pendingQueueSize= 500;
 
-    public Integer getPendingMaxCount() {
-        return pendingMaxCount;
+    public Integer getPendingQueueSize() {
+        return pendingQueueSize;
     }
 
-    public void setPendingMaxCount(Integer pendingMaxCount) {
-        this.pendingMaxCount = pendingMaxCount;
+    public void setPendingQueueSize(Integer pendingQueueSize) {
+        this.pendingQueueSize = pendingQueueSize;
     }
 }

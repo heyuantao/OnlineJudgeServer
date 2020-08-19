@@ -1,5 +1,6 @@
 package cn.heyuantao.onlinejudgeserver.debug;
 
+import cn.heyuantao.onlinejudgeserver.annotation.Debug;
 import cn.heyuantao.onlinejudgeserver.domain.ProblemRequestDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +25,12 @@ public class DebugService {
     @Autowired
     DebugDataSetUtils debugDataSetUtils;
 
+    @Debug(value = "false")
     @Scheduled(fixedRate = 30*1000)
     public void postProblemSchedule() throws IOException {
         String errorMessage = String.format("This api should not be call in Production, Post post to add problem api !");
         log.error(errorMessage);
-        /**
-         * 周期性得添加题目
-         */
+        //周期性执行任务
         postProblemToAPI();
     }
 

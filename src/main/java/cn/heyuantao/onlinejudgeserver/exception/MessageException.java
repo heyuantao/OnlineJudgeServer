@@ -17,7 +17,7 @@ public class MessageException extends RuntimeException{
 
     @Override
     public String getMessage(){
-        return "系统发生了问题:"+message;
+        return message;
     }
 
 }

@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MessageException.class)
     public ResponseEntity<?> handleMessageException(MessageException exception, WebRequest request){
-        ErrorDetails errorDetails = new ErrorDetails(exception.getMessage(),"数据校验错误");
+        ErrorDetails errorDetails = new ErrorDetails("软件错误提示",exception.getMessage());
         return new ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST);
     }
 

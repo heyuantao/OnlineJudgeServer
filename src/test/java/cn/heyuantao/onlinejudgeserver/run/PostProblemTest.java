@@ -68,8 +68,8 @@ public class PostProblemTest {
     }
 
     @Test
-    public void other(){
-        Integer value = queueConfig.getPendingMaxCount();
+    public void displayConfigSettings(){
+        Integer value = queueConfig.getPendingQueueSize();
         System.out.print(value);
     }
 }

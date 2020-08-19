@@ -26,6 +26,9 @@ logging:
 
 #This is api key use for auth header
 custom:
-  keys:
-    - "abc123"
-    - "efg456"
+  auth:
+    keys:
+      - "abc123"
+      - "efg456"
+  queue:
+    pending-queue-size: 100
