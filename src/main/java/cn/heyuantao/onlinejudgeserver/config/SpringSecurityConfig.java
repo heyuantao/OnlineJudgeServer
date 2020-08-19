@@ -31,6 +31,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/swagger-ui.html","/swagger-resources","/swagger-resources/**","/v2/api-docs","/webjars/**").permitAll()
                 //.antMatchers("/permissiontest").permitAll()
                 //.antMatchers("/api/**").permitAll()
+                .antMatchers("/api/v1/debug/*").permitAll()
                 .antMatchers("/","/version").permitAll()
                 //.antMatchers("/","/index","/css/*","/js/*","/webjars/**").permitAll()
                 .anyRequest().authenticated()
