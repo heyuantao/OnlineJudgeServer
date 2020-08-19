@@ -1,5 +1,6 @@
 package cn.heyuantao.onlinejudgeserver.run;
 
+import cn.heyuantao.onlinejudgeserver.core.Problem;
 import cn.heyuantao.onlinejudgeserver.core.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -15,7 +16,9 @@ import org.springframework.web.reactive.function.client.WebClientException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.nio.Buffer;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,5 +45,42 @@ public class FullTest {
 
     }
 
+    @Test
+    public void appendProblem() throws UnsupportedEncodingException {
+        String addProblemUrl = String.format("http://127.0.0.1:8080/api/v1/onlinejudgeserver/problem/");
 
+        try{
+            Mono<String> resp = WebClient.create().get().uri(addProblemUrl).
+                    accept(MediaType.APPLICATION_JSON).retrieve().bodyToMono(String.class);
+
+        }catch (WebClientResponseException ex){
+            HttpStatus status = ex.getStatusCode();
+            String content = new String(ex.getResponseBodyAsByteArray(),"utf-8");
+            System.out.println(status);
+            System.out.println(content);
+        }
+    }
+
+    @Test
+    public void generateOneProblem() throws IOException {
+        String fileName = "sourcecode.c";
+        String fullPath = getFullDirWithFilename(fileName);
+        System.out.println(fullPath);
+
+        Problem problem = new Problem();
+        problem.setSourceCode("");
+
+        BufferedReader fileReader = new BufferedReader(new FileReader(fullPath));
+        String oneLine = null;
+        while((oneLine = fileReader.readLine())!=null ){
+            System.out.println(oneLine);
+        }
+    }
+
+    public String getFullDirWithFilename(String fileName){
+        String projectPath = System.getProperty("user.dir");
+        String subPath = "\\src\\test\\java\\cn\\heyuantao\\onlinejudgeserver\\run\\";
+        String fullPath = String.format("%s%s%s",projectPath,subPath,fileName);
+        return fullPath;
+    }
 }
