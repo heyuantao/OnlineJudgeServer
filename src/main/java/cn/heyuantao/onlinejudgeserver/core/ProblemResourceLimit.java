@@ -28,7 +28,7 @@ public class ProblemResourceLimit implements Serializable {
      */
     public ProblemResourceLimit() {
         this.timeLimit = 2;
-        this.memoryLimit = 512;
+        this.memoryLimit = 128;
         this.isSpecialJudge = Boolean.FALSE;
     }
 
