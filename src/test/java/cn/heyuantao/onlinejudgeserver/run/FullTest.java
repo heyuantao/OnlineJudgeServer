@@ -72,9 +72,14 @@ public class FullTest {
 
         BufferedReader fileReader = new BufferedReader(new FileReader(fullPath));
         String oneLine = null;
+        StringBuilder stringBuilder = new StringBuilder();
         while((oneLine = fileReader.readLine())!=null ){
-            System.out.println(oneLine);
+            stringBuilder.append(oneLine);
+            stringBuilder.append("\n");
         }
+        System.out.println("##################");
+        System.out.print(stringBuilder.toString());
+        System.out.print("##################");
     }
 
     public String getFullDirWithFilename(String fileName){
