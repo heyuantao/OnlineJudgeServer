@@ -43,7 +43,7 @@ public class PostProblemTest {
     @Test
     public void appendProblem() throws IOException {
         String addProblemUrl = String.format("http://127.0.0.1:8080/api/v1/onlinejudgeserver/problem/");
-        ProblemGeneratorTest problemGenerator = new ProblemGeneratorTest();
+        DisplayProblemTest problemGenerator = new DisplayProblemTest();
         ProblemRequestDTO oneProblem = debugDataSetUtils.getSampleProblemDTO();
         System.out.print(oneProblem);
 

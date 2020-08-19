@@ -23,7 +23,7 @@ import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class ProblemGeneratorTest {
+public class DisplayProblemTest {
 
     @Autowired
     DebugDataSetUtils debugDataSetUtils;
