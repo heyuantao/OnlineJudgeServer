@@ -70,6 +70,14 @@ public class FullTest {
         Problem problem = new Problem();
         problem.setSourceCode("");
 
+        String content = readFileContentWithFullPath(fullPath);
+
+        System.out.println("##################");
+        System.out.print(content);
+        System.out.print("##################");
+    }
+
+    public String readFileContentWithFullPath(String fullPath) throws IOException {
         BufferedReader fileReader = new BufferedReader(new FileReader(fullPath));
         String oneLine = null;
         StringBuilder stringBuilder = new StringBuilder();
@@ -77,14 +85,12 @@ public class FullTest {
             stringBuilder.append(oneLine);
             stringBuilder.append("\n");
         }
-        System.out.println("##################");
-        System.out.print(stringBuilder.toString());
-        System.out.print("##################");
+        return stringBuilder.toString();
     }
 
     public String getFullDirWithFilename(String fileName){
         String projectPath = System.getProperty("user.dir");
-        String subPath = "\\src\\test\\java\\cn\\heyuantao\\onlinejudgeserver\\run\\";
+        String subPath = "/src/test/data/";
         String fullPath = String.format("%s%s%s",projectPath,subPath,fileName);
         return fullPath;
     }
