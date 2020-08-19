@@ -55,7 +55,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(InvalidValueException.class)
     public ResponseEntity<?> handleInvalidValueException(InvalidValueException exception, WebRequest request){
-        ErrorDetails errorDetails = new ErrorDetails(exception.getMessage(),"数据校验错误");
+        ErrorDetails errorDetails = new ErrorDetails("数值设置出错",exception.getMessage());
         return new ResponseEntity(errorDetails, HttpStatus.BAD_REQUEST);
     }
 

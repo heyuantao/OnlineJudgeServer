@@ -27,10 +27,10 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
+                //The urls use for swagger
                 .antMatchers("/swagger-ui.html","/swagger-resources","/swagger-resources/**","/v2/api-docs","/webjars/**").permitAll()
-                //.antMatchers("/api/v1/login").permitAll()
-                .antMatchers("/permissiontest").permitAll()
-                .antMatchers("/api/**").permitAll()
+                //.antMatchers("/permissiontest").permitAll()
+                //.antMatchers("/api/**").permitAll()
                 .antMatchers("/","/version").permitAll()
                 //.antMatchers("/","/index","/css/*","/js/*","/webjars/**").permitAll()
                 .anyRequest().authenticated()
