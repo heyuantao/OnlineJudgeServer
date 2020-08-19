@@ -72,7 +72,7 @@ public class OnlineJudgeServerController {
         map.put("compileErrorInformation",judgeResult.getCompileErrorInformation());
         map.put("runErrorInformation",judgeResult.getRunErrorInformation());
         //该字段为题目所处的状态描述，为所述状态中的一个。PENDING(等待)、PROCESSING(处理中)、FINISHED(结束)
-        map.put("summary",judgeStatusSummary);
+        map.put("statusSummary",judgeStatusSummary);
 
         return new ResponseEntity(map, HttpStatus.ACCEPTED);
     }
