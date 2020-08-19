@@ -63,7 +63,7 @@ public class FullTest {
 
     @Test
     public void generateOneProblem() throws IOException {
-        String fileName = "sourcecode.c";
+        String fileName = "problem01/sourcecode.c";
         String fullPath = getFullDirWithFilename(fileName);
         System.out.println(fullPath);
 
@@ -90,8 +90,8 @@ public class FullTest {
 
     public String getFullDirWithFilename(String fileName){
         String projectPath = System.getProperty("user.dir");
-        String subPath = "/src/test/data/";
-        String fullPath = String.format("%s%s%s",projectPath,subPath,fileName);
+        String dataPath = "/src/test/data/";
+        String fullPath = String.format("%s%s%s",projectPath,dataPath,fileName);
         return fullPath;
     }
 }
