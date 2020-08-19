@@ -15,16 +15,22 @@ import java.util.List;
 @Service
 public class AuthService {
 
+    /**
+     * AuthKeyConfig是一个配置信息类，其中含有在Authorization Header认证用的Token,同时该类也存放了UserDetails中的默认用户名和密码
+     */
     @Autowired
     AuthKeyConfig authKeyConfig;
+
+
     /**
      * 根据Token来返回用户的实例
      * @param userToken
      * @return
      */
     public SysUser loadSysUserByToken(String userToken){
-        if(userToken.equals("abc123")){
-            return new SysUser("user","nopassword");
+        List<String> keyList = authKeyConfig.getKeys();
+        if(keyList.contains(userToken)){
+            return new SysUser(authKeyConfig.getSystemDefaultUsername(),authKeyConfig.getSystemDefaultPassword());
         }else{
             return null;
         }

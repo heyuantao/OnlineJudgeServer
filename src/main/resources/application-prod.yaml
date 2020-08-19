@@ -23,3 +23,9 @@ spring:
 logging:
   level:
     root: error
+
+#This is api key use for auth header
+custom:
+  keys:
+    - "abc123"
+    - "efg456"
