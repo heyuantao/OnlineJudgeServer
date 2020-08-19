@@ -1,8 +1,10 @@
 package cn.heyuantao.onlinejudgeserver.controller;
 
+import cn.heyuantao.onlinejudgeserver.config.QueueConfig;
 import cn.heyuantao.onlinejudgeserver.core.*;
 import cn.heyuantao.onlinejudgeserver.domain.ProblemRequestDTO;
 import cn.heyuantao.onlinejudgeserver.exception.BindingResultException;
+import cn.heyuantao.onlinejudgeserver.exception.MessageException;
 import cn.heyuantao.onlinejudgeserver.service.OnlineJudgeServerService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,9 @@ public class OnlineJudgeServerController {
     @Autowired
     OnlineJudgeServerService onlineJudgeServerService;
 
+    @Autowired
+    QueueConfig queueConfig;
+
     @PostMapping("/problem/")
     public ResponseEntity<Map<String,Object>> createProblem(
             @Validated @RequestBody ProblemRequestDTO problemRequestDTO,
@@ -40,6 +45,11 @@ public class OnlineJudgeServerController {
         }
 
         Problem problem = convertToProblem(problemRequestDTO);
+
+        Long currentPendingSolutionCount = onlineJudgeServerService.getSolutionCount();
+        if(currentPendingSolutionCount > queueConfig.getPendingMaxCount()){
+            throw new MessageException("Too much solution is in pending status !");
+        }
 
         Solution solution = onlineJudgeServerService.createSolutionByProblem(problem);
 

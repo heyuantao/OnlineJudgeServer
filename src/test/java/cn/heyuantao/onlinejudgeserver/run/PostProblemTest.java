@@ -1,7 +1,9 @@
 package cn.heyuantao.onlinejudgeserver.run;
 
+import cn.heyuantao.onlinejudgeserver.config.QueueConfig;
 import cn.heyuantao.onlinejudgeserver.debug.DebugDataSetUtils;
 import cn.heyuantao.onlinejudgeserver.domain.ProblemRequestDTO;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,6 +24,9 @@ public class PostProblemTest {
 
     @Autowired
     DebugDataSetUtils debugDataSetUtils;
+
+    @Autowired
+    QueueConfig queueConfig;
 
     @Test
     public void getStatus() throws UnsupportedEncodingException {
@@ -62,4 +67,9 @@ public class PostProblemTest {
         }
     }
 
+    @Test
+    public void other(){
+        Integer value = queueConfig.getPendingMaxCount();
+        System.out.print(value);
+    }
 }

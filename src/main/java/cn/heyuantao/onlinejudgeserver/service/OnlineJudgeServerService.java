@@ -23,6 +23,14 @@ public class OnlineJudgeServerService {
     RedisService redisService;
 
     /**
+     * 统计当前待处理得问题得数量
+     * @return
+     */
+    public Long getSolutionCount(){
+        return redisService.getPendingQueueLength();
+    }
+
+    /**
      * 根据输入的问题，保存到Redis中，并将对应的ID返回
      * @param problem
      * @return

@@ -13,7 +13,7 @@ import java.util.UUID;
  * @author he_yu
  * 包含软件的密钥配置信息
  */
-@ConfigurationProperties(prefix = "custom")
+@ConfigurationProperties(prefix = "custom.auth")
 @Configuration
 public class AuthKeyConfig {
     /**
