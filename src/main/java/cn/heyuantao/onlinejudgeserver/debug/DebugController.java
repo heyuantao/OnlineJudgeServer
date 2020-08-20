@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/api/v1/debug/")
 public class DebugController {
 
-    @GetMapping("/{problemId}")
+    @GetMapping("/{problemId}/")
     public ResponseEntity<String> debugForNotifyUrl(
             @RequestParam String problemId
     ){

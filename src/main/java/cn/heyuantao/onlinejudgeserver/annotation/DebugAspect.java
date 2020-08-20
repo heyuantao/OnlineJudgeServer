@@ -27,19 +27,30 @@ public class DebugAspect {
             System.out.println("#############################After Debug#############################");
             return result;
         }else{
-            System.out.println("#############################Do not Debug#############################");
+            System.out.println("##########################Not in Debug mode###########################");
             return null;
         }
     }
 
+    /**
+     * 通过注解的参数来判断是否Debug模式是否打开了
+     * @param pointCut
+     * @return
+     */
     Boolean isDebug(ProceedingJoinPoint pointCut){
         String methodName = pointCut.getSignature().getName();
-
         try {
             Debug debugAnno = pointCut.getTarget().getClass().getMethod(methodName).getAnnotation(Debug.class);
             String debugAnnoValue = debugAnno.value();
+            //当Debug的value为true和on是为调试模式，为false、off或者其他值时为非调试模式
             if(StringUtils.equalsIgnoreCase(debugAnnoValue,"true")){
                 return Boolean.TRUE;
+            }else if(StringUtils.equalsIgnoreCase(debugAnnoValue,"on")){
+                return Boolean.TRUE;
+            }else if(StringUtils.equalsIgnoreCase(debugAnnoValue,"false")){
+                return Boolean.FALSE;
+            }else if(StringUtils.equalsIgnoreCase(debugAnnoValue,"off")){
+                return Boolean.FALSE;
             }else{
                 return Boolean.FALSE;
             }

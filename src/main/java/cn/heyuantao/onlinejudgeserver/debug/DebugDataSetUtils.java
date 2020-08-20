@@ -12,6 +12,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 /**
  * @author he_yu
@@ -21,19 +23,47 @@ import java.util.List;
 public class DebugDataSetUtils {
 
     /**
-     * 生成一个默认的问题请求,用于代码的调试
+     * 随机选择一个问题
      * @return
      * @throws IOException
      */
     public ProblemRequestDTO getSampleProblemDTO() throws IOException {
+        Random random = new Random();
+        Boolean status = random.nextBoolean();
+        if(status.equals(Boolean.TRUE)){
+            return getSampleProblem01DTO();
+        }else{
+            return getSampleProblem02DTO();
+        }
+    }
+
+    public ProblemRequestDTO getSampleProblem01DTO() throws IOException {
         String sourceCodePath    = "data/problem01/sourcecode.c";
         String testCase01InPath  = "data/problem01/test1.in";
         String testCase01OutPath = "data/problem01/test1.out";
         String testCase02InPath  = "data/problem01/test2.in";
         String testCase02OutPath = "data/problem01/test2.out";
 
-        List<String> inPathList = new ArrayList<>();
-        List<String> outPathList = new ArrayList<>();
+        List<String> inPathList = new ArrayList<String>();
+        List<String> outPathList = new ArrayList<String>();
+        inPathList.add(testCase01InPath);
+        inPathList.add(testCase02InPath);
+        outPathList.add(testCase01OutPath);
+        outPathList.add(testCase02OutPath);
+
+        ProblemRequestDTO problem = getProblemDTO(sourceCodePath,inPathList,outPathList);
+        return problem;
+    }
+
+    public ProblemRequestDTO getSampleProblem02DTO() throws IOException {
+        String sourceCodePath    = "data/problem02/sourcecode.c";
+        String testCase01InPath  = "data/problem02/test1.in";
+        String testCase01OutPath = "data/problem02/test1.out";
+        String testCase02InPath  = "data/problem02/test2.in";
+        String testCase02OutPath = "data/problem02/test2.out";
+
+        List<String> inPathList = new ArrayList<String>();
+        List<String> outPathList = new ArrayList<String>();
         inPathList.add(testCase01InPath);
         inPathList.add(testCase02InPath);
         outPathList.add(testCase01OutPath);
@@ -71,7 +101,10 @@ public class DebugDataSetUtils {
         problem.setMemoryLimit(128);
         problem.setTimeLimit(2);
         problem.setIsSpecialJudge(Boolean.FALSE);
-        problem.setNotifyAddress("http://localhost/test");
+
+        //生成一个五位的随机码，放在通知网址的后部
+        String notifyUrl = String.format("%s%s/","http://localhost:8080/api/v1/debug/", UUID.randomUUID().toString().replace("-", "").toLowerCase().substring(0,5));
+        problem.setNotifyAddress(notifyUrl);
 
         return problem;
     }

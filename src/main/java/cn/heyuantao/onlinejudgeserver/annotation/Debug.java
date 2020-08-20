@@ -4,7 +4,8 @@ package cn.heyuantao.onlinejudgeserver.annotation;
 import java.lang.annotation.*;
 
 /**
- * 当配置为value=false时，不执行调试程序
+ * 使用时设置Debug(value=?),其中value设置的值为"true","false","on","off"
+ * 当value为true和on是为调试模式，为false、off或者其他值时为非调试模式
  * @author he_yu
  */
 @Documented
