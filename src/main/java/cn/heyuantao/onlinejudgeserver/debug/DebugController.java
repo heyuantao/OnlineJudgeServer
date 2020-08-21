@@ -5,9 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author he_yu
@@ -21,9 +19,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/api/v1/debug/")
 public class DebugController {
 
-    @GetMapping("/{problemId}/")
+    /**
+     * Rethink the post and get method
+     * @param problemId
+     * @return
+     */
+    @PostMapping("/{problemId}/")
     public ResponseEntity<String> debugForNotifyUrl(
-            @RequestParam String problemId
+            @PathVariable String problemId
     ){
         String errorMessage = String.format("This api should not be call in Production, Problem with %s has finished judged !",problemId);
         log.error(errorMessage);

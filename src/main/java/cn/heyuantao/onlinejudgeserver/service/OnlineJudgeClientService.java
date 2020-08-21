@@ -84,7 +84,6 @@ public class OnlineJudgeClientService {
         /**
          * 检查这个任务是否在结束状态，如果在结束状态则通知第三方客户端，同时删除这个任务的信息
          */
-        //JudgeStatus judgeStatus = solution.getResult().getJudgeStatus();
         if(JudgeStatus.isInFinalStatus(judgeStatus)) {
             clearTheProcessingStatusAndNotifyTheClient(solution);
         }

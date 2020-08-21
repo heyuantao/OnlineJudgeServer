@@ -76,6 +76,8 @@ public class OnlineJudgeServerService {
         //进行三次重试
         for(retryCount =1; retryCount<=maxRetryCount; ){
             //通知第三方客户端，这个过程可能耗时较长，且可能会出错
+            System.out.println("Notify "+notifyUrl);
+            System.out.println("With "+entity);
             ResponseEntity<String> responseEntity = restTemplate.postForEntity(notifyUrl,entity,String.class);
 
             //如下是几个被认为通知成功的状态
