@@ -28,6 +28,7 @@ public class OnlineJudgeClientService {
     OnlineJudgeServerService onlineJudgeServerService;
 
 
+
     /**
      * 从等待队列中找到几个待处理的任务
      * 返回任务数量不超过maxJobs
@@ -43,10 +44,10 @@ public class OnlineJudgeClientService {
              * 先获取一个任务，如果没有任务或者获取任务出错，则返回null
              */
             String id = redisService.pickOneSolutionAndPutIntoProcessingQueue();
-            if (id != null) {
-                list.add(id);
-            } else {
+            if (id==null) {
                 retryCount = retryCount + 1;
+            } else {
+                list.add(id);
             }
             if ((retryCount > 2) || (list.size() >= maxJobs)) {
                 return list;

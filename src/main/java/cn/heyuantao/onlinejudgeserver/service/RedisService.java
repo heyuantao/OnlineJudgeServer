@@ -149,33 +149,12 @@ public class RedisService {
      * @return 如果正常返回一个编号，否则返回null . 如果队列为空，返回值也为null
      */
     public String pickOneSolutionAndPutIntoProcessingQueue(){
-        /**
-         * 创建一个事务，保存所有命令一次执行完成
-         */
-        SessionCallback<Solution> callback = new SessionCallback() {
-
-            @Override
-            public Object execute(RedisOperations operations) throws DataAccessException {
-                /**
-                 * 时间戳，这个值被一块加入用于排序
-                 */
-                Double timeStampInDoubleFormat = getTimeStampInDoubleFormat();
-                operations.multi();
-                String solutionId = (String) operations.opsForList().leftPop(pendingQueueName);
-                operations.opsForZSet().add(processingQueueName, solutionId, timeStampInDoubleFormat);
-                operations.exec();
-                return solutionId;
-            }
-        };
-
-
-        try{
-            String solutionId = (String) redisTemplate.execute(callback);
-            return solutionId;
-        }catch (Exception ex){
-            log.error("Error in pickOneSolutionAndPutIntoProcessingQueue !");
-            return null;
+        Double timeStampInDoubleFormat = getTimeStampInDoubleFormat();
+        String solutionId = (String) redisTemplate.opsForList().leftPop(pendingQueueName);
+        if(solutionId!=null){
+            redisTemplate.opsForZSet().add(processingQueueName, solutionId, timeStampInDoubleFormat);
         }
+        return solutionId;
     }
 
     /**
@@ -199,33 +178,10 @@ public class RedisService {
         /**
          * 创建一个事务，保存所有命令一次执行完成
          */
-        SessionCallback<Solution> callback = new SessionCallback() {
-            /**
-             * 将Solution对应的ID从PROCESSING队列移动到FINISHED队列，在插入到FINISHED队列的时候，将当前的时间信息随着ID一同存放。
-             */
-            @Override
-            public Object execute(RedisOperations operations) throws DataAccessException {
-                Double timeStampInDoubleFormat = getTimeStampInDoubleFormat();
-
-                operations.multi();
-                operations.opsForZSet().remove(processingQueueName,oneSolutionId);
-                operations.opsForZSet().add(finishedQueueName, oneSolutionId, timeStampInDoubleFormat);
-                return operations.exec();
-            }
-        };
-
-
-        try{
-            /**
-             * 返回值为ArrayList<Object>,其中每个Object代表了命令的执行情况
-             */
-            List<Object> objectList = (List<Object>) redisTemplate.execute(callback);
-            return Boolean.TRUE;
-        }catch (Exception ex){
-            String errorMessage = String.format("Error in move \'%s\' from processing queue to finished queue at moveSolutionToFinishedQueue()！",oneSolutionId);
-            log.error(errorMessage);
-            return Boolean.FALSE;
-        }
+        Double timeStampInDoubleFormat = getTimeStampInDoubleFormat();
+        redisTemplate.opsForZSet().remove(processingQueueName,oneSolutionId);
+        redisTemplate.opsForZSet().add(finishedQueueName, oneSolutionId, timeStampInDoubleFormat);
+        return Boolean.TRUE;
     }
 
     /**
